@@ -1,0 +1,1983 @@
+{
+  "name": "Voice Table Booking Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -3168,
+        -240
+      ],
+      "id": "2c994e15-4b9d-4cb8-8bb8-6a2419856290",
+      "name": "When chat message received",
+      "webhookId": "5fe1c8e4-e24c-4744-9888-aa708a90902f"
+    },
+    {
+      "parameters": {
+        "model": "gpt-oss:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -3008,
+        -16
+      ],
+      "id": "18656cc2-494f-48a2-84fb-79399467f5e2",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "sBiJHKad06JeU8xo",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10000
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -2608,
+        -32
+      ],
+      "id": "6b43a38c-b385-474b-a350-0510c4df4495",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"restaurant_name\": {\"type\": \"string\"},\n    \"time\": {\"type\": \"string\"},\n    \"meal_type\": {\"type\": \"string\"},\n    \"date\": {\"type\": \"string\"},\n    \"special_request\": {\"type\": \"string\"},\n    \"message\": {\"type\": \"string\"},\n    \"number_of_people\": {\"type\": \"number\"},\n    \"should_add_special_request\": {\"type\": \"string\"}\n  },    \n  \"required\": [\"restaurant_name\", \"time\", \"meal_type\", \"date\", \"special_request\", \"message\", \"number_of_people\", \"should_add_special_request\"]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -2448,
+        48
+      ],
+      "id": "c2370872-b318-4875-b19c-de8e36f56acc",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a voice assistant for a table booking app.\n\nYour job is to extract the following fields from the user's message:\n\n- \"restaurant_name\": name of the restaurant if mentioned\n- \"time\": Time at which they will arrive at restaurant or at which they want to book a table (convert it into 24 hour format). If the user just mentions a time without other details (like \"2:30 PM\" or \"14:30\"), this might be a time selection from previously shown available slots.\n- \"meal_type\": \n\t1. if asked to book in morning: return lunch\n\t2. if asked to book in afternoon/evening/night/midnight or after that but before morning: return dinner\n- \"date\": Date on which they want to book the table. If the user say today or tomorrow or day after tomorrow or anything like that then store the date of the mentioned day. If year is not mentioned then by default consider the current year.\n- \"number_of_people\": Number of people that will come to restaurant\n- \"special_request\": All the additional request and data will be considered as a special request. \n- \"should_add_special_request\": If the user just types No then store it here else keep it empty\n\nAlso generate a \"message\" field — a sentence the assistant will speak to the user — but do not include special_request in the message. Only confirm the restaurant_name, time, meal_type, number_of_people and date. If any field is missing, your message should politely ask for the missing information.\n\nIf the user is not familiar with the restaurants, ask them if they want suggestions.\n\nIMPORTANT:\n- Respond with only valid JSON.\n- Do not include markdown, bullet points, or explanation.\n- Do not wrap the JSON in triple backticks.\n- Do not speak outside the JSON.\n\nHere's an example of the correct response format:\n\n{\n  \"restaurant_name\": \"London yard\",\n  \"time\": \"11:00\",\n  \"meal_type\": \"lunch\",\n  \"date\": \"9/11/2001\", //(DD/MM/YYYY),\n  \"special_request\": \"Don't make too much spicy food\",\n  \"number_of_people\": 1,\n  \"message\": \"🙂\",\n  \"should_add_special_request\": \n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -2656,
+        -240
+      ],
+      "id": "2156b66a-ba9c-4334-a093-5d7cf1bab009",
+      "name": "Parameter Checker"
+    },
+    {
+      "parameters": {
+        "model": "gpt-oss:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -3536,
+        192
+      ],
+      "id": "dc9c61c5-aff8-48d1-a29e-40760b191d33",
+      "name": "Ollama Chat Model1",
+      "credentials": {
+        "ollamaApi": {
+          "id": "sBiJHKad06JeU8xo",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10000
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -3440,
+        192
+      ],
+      "id": "550d0168-6ab5-4b1c-ada7-c52e138af08a",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"message\": {\"type\": \"string\"}\n  },    \n  \"required\": [\"message\"]\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -3328,
+        192
+      ],
+      "id": "520804f6-df4c-4793-aff3-4d9182e84b64",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "\nYou are a voice assistant for a table booking app.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -3552,
+        -32
+      ],
+      "id": "34ae8f43-131c-45ad-9638-aa3be778d55c",
+      "name": "Message giver"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -2784,
+        -16
+      ],
+      "id": "63efc4c7-1a23-48c7-aa74-d143c4d5a18c",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "x708DFvaGdBmaMqA",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://eatancedevappapi.eatanceapp.com/v8/get-restaurants",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"search_keyword\":\"{{ $json.output.restaurant_name }}\",\"app_token\":\"MV8yNTIwMDgyMF8zLjIuMF80NF84\",\"user_id\":\"100146\",\"latitude\":\"23.0122364\",\"start\":0,\"length\":10,\"table_booking\":1,\"language_id\":\"1\",\"longitude\":\"72.5041849\",\"isEncryptionActive\":false,\"platform\":\"android\"}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1520,
+        -1024
+      ],
+      "id": "53bf1df4-b098-47a0-9b54-0b9e791f2bb8",
+      "name": "Get restaurant api",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "Hgr4rTrtdOiAsvsp",
+          "name": "Bearer Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return {message: \"Something went wrong\"}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -944,
+        -864
+      ],
+      "id": "39e5b622-73a8-4c7a-86d1-d3aa40b6f7e6",
+      "name": "get restaurant error msg"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "true",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "id": "187f98ca-c76c-4964-828c-7203014b3c78"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "dd5a4ba3-a646-4719-95f4-d676d8a62f8f",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "false",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "false",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -1216,
+        -1024
+      ],
+      "id": "83ca3bd6-b1cd-4a25-be1f-a59e210bd8ff",
+      "name": "get restaurant api handler"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        368,
+        -1072
+      ],
+      "id": "2db06f9d-6d0e-43cf-ad9b-01ad42159130",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1152,
+        -656
+      ],
+      "id": "b434dad9-8482-4e27-a444-a9e7673b1ee3",
+      "name": "returning user input"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $json;\n\nconst hasData =\n  data.data &&\n  data.data.restaurant_count > 0 &&\n  Array.isArray(data.data.restaurant_lists) &&\n  data.data.restaurant_lists.length > 0;\n\nlet result;\n\nif (!hasData) {\n  result = {\n    status: data.status ?? 2,\n    message: \"No data found.\",\n    restaurant_name: data.restaurant_name,\n    item: data.item\n  };\n} else {\n  result = {\n    restaurant_data: data.data.restaurant_lists[0]\n  };\n}\n\nreturn [{ json: result }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -720,
+        -1040
+      ],
+      "id": "8f556af3-cec7-4f20-a324-aa5ce500ce31",
+      "name": "handle api"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://eatancedevappapi.eatanceapp.com/v8/get-table-booking-details",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"app_token\":\"MV8yNTIwMDgyMF8zLjIuMF80NF84\",\"language_id\":\"1\",\"restaurant_id\":{{ $json.restaurant_data.id }},\"isEncryptionActive\":false,\"platform\":\"android\",\"user_id\":\"100146\",\"latitude\":\"43.711276719200114\",\"longitude\":\"-79.34675755943526\"}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -480,
+        -1040
+      ],
+      "id": "67d8b2b6-2b83-4139-b8df-24f336127004",
+      "name": "Get Table Booking Details Api",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "Hgr4rTrtdOiAsvsp",
+          "name": "Bearer Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      message: $input.first().json.output.message\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2336,
+        -448
+      ],
+      "id": "47879263-8bd4-4292-a3a7-2aeac4e26d24",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      message: $input.first().json.output.message\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2352,
+        -640
+      ],
+      "id": "1975aed3-058f-45ba-a415-4299c57ce16a",
+      "name": "Code3"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.user_input_status }}",
+                    "rightValue": 0,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "989c431a-77f9-4410-9e14-2983ad2221c8"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "73e4ad03-e8a1-4585-aaf5-4ec4f126be0f",
+                    "leftValue": "={{ $json.user_input_status }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "222d33b6-42c5-4d0f-b361-f5392966af5a",
+                    "leftValue": "={{ $json.user_input_status }}",
+                    "rightValue": 2,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -2032,
+        -256
+      ],
+      "id": "0e1a0bec-537c-44e6-87b7-0cf7b5bca20b",
+      "name": "Switch on the basis of user_input_status"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $json\n\n// Check if all required fields are present and non-empty\nconst hasAllRequiredFields = \n  (data.output.restaurant_name != \"\" && data.output.restaurant_name != null) &&\n  (data.output.time != \"\" && data.output.time != null) &&\n  (data.output.meal_type != \"\" && data.output.meal_type != null) &&\n  (data.output.date != \"\" && data.output.date != null) &&\n  (data.output.number_of_people != \"\" && data.output.number_of_people != null);\n\n// Check if special request is provided\nconst hasSpecialRequest = (data.output.special_request != \"\" && data.output.special_request != null);\n\nif (hasAllRequiredFields && hasSpecialRequest) {\n  // All required fields + special request present\n  return {\n    restaurant_name: data.output.restaurant_name,\n    time: data.output.time,\n    meal_type: data.output.meal_type,\n    date: data.output.date,\n    special_request: data.output.special_request,\n    message: data.output.message,\n    number_of_people: data.output.number_of_people,\n    user_input_status: 0, // Ready for booking\n    // confirmation_attempt: data.output.confirmation_attempt\n  }\n} else if (hasAllRequiredFields && !hasSpecialRequest) {\n  // All required fields present but no special request\n  // if (data.output.confirmation_attempt === 1) {\n  //   // User was asked for special request but didn't provide one - proceed with booking\n  //   return {\n  //     restaurant_name: data.output.restaurant_name,\n  //     time: data.output.time,\n  //     meal_type: data.output.meal_type,\n  //     date: data.output.date,\n  //     special_request: data.output.special_request,\n  //     message: data.output.message,\n  //     number_of_people: data.output.number_of_people,\n  //     user_input_status: 0, // Ready for booking\n  //     confirmation_attempt: data.output.confirmation_attempt\n  //   }\n  // } else {\n    // First time with all required fields but no special request - ask for special request\n    return {\n      restaurant_name: data.output.restaurant_name,\n      time: data.output.time,\n      meal_type: data.output.meal_type,\n      date: data.output.date,\n      special_request: data.output.special_request,\n      message: data.output.message,\n      number_of_people: data.output.number_of_people,\n      user_input_status: 1, // Ask for special request\n      // confirmation_attempt: data.output.confirmation_attempt\n      should_add_special_request: data.output.should_add_special_request\n    }\n  // }\n} else {\n  // Missing required fields\n  return {\n    user_input_status: 2, // Ask for missing information\n    message: data.output.message,\n    // confirmation_attempt: data.output.confirmation_attempt\n  }\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2304,
+        -240
+      ],
+      "id": "640c2003-a206-46e9-b51d-4eacc5ff09ee",
+      "name": "Setting user_input_status"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $json"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1584,
+        128
+      ],
+      "id": "d605fe05-d81b-402c-9778-15ceb777bf01",
+      "name": "Important info missing message"
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10000
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -3904,
+        -1200
+      ],
+      "id": "78f5f901-3a9c-4745-af12-da59b596c955",
+      "name": "Simple Memory2"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"message\": {\"type\": \"string\"}\n  },    \n  \"required\": [\"message\"]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -3744,
+        -1136
+      ],
+      "id": "612b69b4-4d1a-4441-af7d-71fe64fda556",
+      "name": "Structured Output Parser2"
+    },
+    {
+      "parameters": {
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a voice assistant.\n\nYour job is to answer to the user properly"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -3952,
+        -1424
+      ],
+      "id": "389f8d09-c20e-491f-9762-a2b32fb64c7d",
+      "name": "Parameter Checker1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -4080,
+        -1184
+      ],
+      "id": "9079f157-de7d-4db5-9641-da65e6b23625",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "x708DFvaGdBmaMqA",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Enhanced Restaurant booking validation code for n8n\nconst bookingData = $input.all()[0].json;\n\n// Helper function to convert date from DD/MM/YYYY to YYYY-MM-DD\nfunction convertDateFormat(dateString) {\n  const [day, month, year] = dateString.split('/');\n  return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;\n}\n\n// Helper function to create time slots\nfunction createTimeSlots(startTime, endTime, intervalMinutes) {\n  const slots = [];\n  const [startHour, startMinute] = startTime.split(':').map(Number);\n  const [endHour, endMinute] = endTime.split(':').map(Number);\n  \n  let currentMinutes = startHour * 60 + startMinute;\n  const endMinutes = endHour * 60 + endMinute;\n  \n  while (currentMinutes <= endMinutes) {\n    const hours = Math.floor(currentMinutes / 60);\n    const minutes = currentMinutes % 60;\n    slots.push(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`);\n    currentMinutes += intervalMinutes;\n  }\n  \n  return slots;\n}\n\n// Helper function to check if time is in the past\nfunction isTimePast(dateStr, timeStr) {\n  const now = new Date();\n  const [hours, minutes] = timeStr.split(':').map(Number);\n  const bookingDateTime = new Date(dateStr);\n  bookingDateTime.setHours(hours, minutes, 0, 0);\n  \n  return bookingDateTime < now;\n}\n\n// Helper function to check if a time slot is valid (exists in available slots)\nfunction isValidTimeSlot(requestedTime, availableSlots) {\n  return availableSlots.includes(requestedTime);\n}\n\n// Helper function to get future slots for today\nfunction getFutureSlots(slots, dateStr) {\n  const now = new Date();\n  const currentDate = new Date(dateStr);\n  \n  if (currentDate.toDateString() === now.toDateString()) {\n    const currentHour = now.getHours();\n    const currentMinute = now.getMinutes();\n    const currentTimeInMinutes = currentHour * 60 + currentMinute;\n    \n    return slots.filter(slot => {\n      const [hour, minute] = slot.split(':').map(Number);\n      const slotTimeInMinutes = hour * 60 + minute;\n      return slotTimeInMinutes > currentTimeInMinutes;\n    });\n  }\n  \n  return slots;\n}\n\ntry {\n  // Convert the requested date to YYYY-MM-DD format\n  const requestedDate = convertDateFormat(bookingData.date);\n  const mealType = bookingData.meal_type.toLowerCase();\n  const requestedTime = bookingData.time;\n  const tableConfigurations = bookingData.data.table_timings_configurations;\n  const timeInterval = parseInt(bookingData.data.table_booking_time_interval);\n  \n  // Check if requested date is available\n  const availableDate = tableConfigurations.find(config => config.date === requestedDate);\n  \n  if (!availableDate) {\n    // Return available date options\n    const availableDates = tableConfigurations.map(config => ({\n      date: config.date,\n      day_name: config.day_name,\n      lunch_hours: `${config.lunch_open} - ${config.lunch_close}`,\n      dinner_hours: `${config.dinner_open} - ${config.dinner_close}`\n    }));\n    \n    const availableDatesString = availableDates.map(date => \n      `${date.day_name} (${date.date})`\n    ).join(', ');\n    \n    return [{\n      json: {\n        status: false,\n        message: `Requested date ${bookingData.date} is not available. Please choose from available dates: ${availableDatesString}`,\n        available_dates: availableDates,\n        should_call_api: 0\n      }\n    }];\n  }\n  \n  // Get the appropriate opening and closing times based on meal type\n  let openTime, closeTime;\n  \n  if (mealType === 'lunch') {\n    openTime = availableDate.lunch_open;\n    closeTime = availableDate.lunch_close;\n  } else if (mealType === 'dinner') {\n    openTime = availableDate.dinner_open;\n    closeTime = availableDate.dinner_close;\n  } else {\n    return [{\n      json: {\n        status: false,\n        message: \"Invalid meal type. Please specify 'lunch' or 'dinner'.\",\n        should_call_api: 0\n      }\n    }];\n  }\n  \n  // Create time slots\n  const timeSlots = createTimeSlots(openTime, closeTime, timeInterval);\n  \n  // Get available slots (considering past times for today)\n  const availableSlots = getFutureSlots(timeSlots, requestedDate);\n  \n  if (availableSlots.length === 0) {\n    return [{\n      json: {\n        status: false,\n        message: `No available slots for ${mealType} on ${availableDate.day_name}. Please choose a different date or meal time.`,\n        requested_time: requestedTime,\n        meal_type: mealType,\n        date: requestedDate,\n        should_call_api: 0\n      }\n    }];\n  }\n  \n  // Check if requested time is in the past\n  if (isTimePast(requestedDate, requestedTime)) {\n    const availableSlotsString = availableSlots.join(', ');\n    \n    return [{\n      json: {\n        status: false,\n        message: `Requested time ${requestedTime} has passed. Here are the available slots for ${mealType} on ${availableDate.day_name}: ${availableSlotsString}. Please choose one of these times.`,\n        available_slots: availableSlots,\n        meal_type: mealType,\n        date: requestedDate,\n        requested_time: requestedTime,\n        should_call_api: 0,\n        awaiting_time_selection: true\n      }\n    }];\n  }\n  \n  // Check if requested time is a valid slot\n  if (!isValidTimeSlot(requestedTime, availableSlots)) {\n    const availableSlotsString = availableSlots.join(', ');\n    \n    return [{\n      json: {\n        status: false,\n        message: `Requested time ${requestedTime} is not available for ${mealType} on ${availableDate.day_name}. Here are the available slots: ${availableSlotsString}. Please choose one of these times.`,\n        available_slots: availableSlots,\n        meal_type: mealType,\n        date: requestedDate,\n        requested_time: requestedTime,\n        should_call_api: 0,\n        awaiting_time_selection: true\n      }\n    }];\n  }\n  \n  // If we reach here, the requested time is valid and available\n  return [{\n    json: {\n      status: true,\n      message: `Booking confirmed for ${bookingData.restaurant_name} on ${availableDate.day_name} (${requestedDate}) at ${requestedTime} for ${bookingData.number_of_people} people.`,\n      booking_details: {\n        restaurant_name: bookingData.restaurant_name,\n        date: requestedDate,\n        day_name: availableDate.day_name,\n        time: requestedTime,\n        meal_type: mealType,\n        number_of_people: bookingData.number_of_people,\n        special_request: bookingData.special_request,\n        requested_time: requestedTime,\n        assigned_time: requestedTime,\n        meal_hours: mealType === 'lunch' ? `${openTime} - ${closeTime}` : `${openTime} - ${closeTime}`\n      },\n      available_slots: timeSlots,\n      table_booking_time_interval: $input.first().json.data.table_booking_time_interval,\n      restaurant_id: $input.first().json.restaurant_id,\n      should_call_api: 1\n    }\n  }];\n  \n} catch (error) {\n  return [{\n    json: {\n      status: false,\n      message: \"An error occurred while processing the booking request.\",\n      error: error.message,\n      should_call_api: 0\n    }\n  }];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        576,
+        -1056
+      ],
+      "id": "47e62c0f-9110-4b71-9980-68322c7de85f",
+      "name": "Handling all info received from user"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  json: {\n    restaurant_id: $input.first().json.restaurant_data.id,  \n  }\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -448,
+        -1200
+      ],
+      "id": "0e690261-6b5c-4335-a4ad-ddfe53129c25",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://eatancedevappapi.eatanceapp.com/v8/confirm-booking",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Usertimezone",
+              "value": "Asia/Kolkata"
+            },
+            {
+              "name": "secondsFromGMT",
+              "value": "19800"
+            },
+            {
+              "name": "userTimeZoneAbbreviation",
+              "value": "IST"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"additional_request\":\"{{ $json.booking_details.special_request }}\",\"app_token\":\"MV8yNTIwMDgyMF8zLjIuMF80NF84\",\"booking_date\":\"{{ $json.booking_details.date }}\",\"language_id\":\"1\",\"no_of_people\":\"{{ $json.booking_details.number_of_people }}\",\"occasion\":\"\",\"restaurant_id\":\"{{ $json.restaurant_id }}\",\"start_time\":\"{{ $json.booking_details.assigned_time }}\",\"table_booking_time_interval\":\"{{ $json.table_booking_time_interval }}\",\"table_location_id\":\"\",\"isEncryptionActive\":false,\"platform\":\"android\",\"user_id\":\"100146\",\"latitude\":\"23.0122364\",\"longitude\":\"72.5041849\"}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1232,
+        -928
+      ],
+      "id": "fb8830cb-571d-4b3f-82b7-e1dde245b8ec",
+      "name": "Confirm Booking api",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "Hgr4rTrtdOiAsvsp",
+          "name": "Bearer Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "true",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "id": "187f98ca-c76c-4964-828c-7203014b3c78"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "dd5a4ba3-a646-4719-95f4-d676d8a62f8f",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "false",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "false",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1424,
+        -928
+      ],
+      "id": "4ec5e083-adb1-4b11-b8c8-4731d14a91b1",
+      "name": "Confirm Booking api handler"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {message: \"Something went wrong\"}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1648,
+        -800
+      ],
+      "id": "8ad386f3-9859-4a59-adcd-7ba0c9ec3cee",
+      "name": "Confirm Booking api error msg"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $json"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1648,
+        -1008
+      ],
+      "id": "91ba147f-293f-451a-b8e9-18673a519c3d",
+      "name": "Confirm Booking api success msg"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $json"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -16,
+        -1056
+      ],
+      "id": "7d2b653d-9860-4921-940d-87469ca588da",
+      "name": "Get Table Booking Details api success msg"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "true",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "id": "187f98ca-c76c-4964-828c-7203014b3c78"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "dd5a4ba3-a646-4719-95f4-d676d8a62f8f",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "false",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "false",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -224,
+        -1040
+      ],
+      "id": "8ab810f8-a815-4399-8a16-7e6009a4307f",
+      "name": "Get Table Booking Details api handler"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {message: \"Something went wrong\"}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        -864
+      ],
+      "id": "97fdf8e0-0655-4b66-8a63-9da305b1f9b2",
+      "name": "Get Table Booking Details api error msg"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://eatancedevappapi.eatanceapp.com/v8/get-restaurants",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"search_keyword\":\"{{ $json.output.restaurant_name }}\",\"app_token\":\"MV8yNTIwMDgyMF8zLjIuMF80NF84\",\"user_id\":\"100146\",\"latitude\":\"23.0122364\",\"start\":0,\"length\":10,\"table_booking\":1,\"language_id\":\"1\",\"longitude\":\"72.5041849\",\"isEncryptionActive\":false,\"platform\":\"android\"}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -624,
+        -256
+      ],
+      "id": "45395992-d1a0-4519-9a8b-5c4ddcf44a0f",
+      "name": "Get restaurant api1",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "Hgr4rTrtdOiAsvsp",
+          "name": "Bearer Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return {message: \"Something went wrong\"}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -48,
+        -96
+      ],
+      "id": "ef85e6c6-40b6-4360-8926-da443d7ce3bb",
+      "name": "get restaurant error msg1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "true",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "id": "187f98ca-c76c-4964-828c-7203014b3c78"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "dd5a4ba3-a646-4719-95f4-d676d8a62f8f",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "false",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "false",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -320,
+        -256
+      ],
+      "id": "c90b25b6-b04b-48f1-9e55-83a0e9f07398",
+      "name": "get restaurant api handler1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1264,
+        -304
+      ],
+      "id": "5b476586-9699-4235-95b3-4a9176e80340",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -256,
+        112
+      ],
+      "id": "6cb40a74-55b3-4a57-8c1b-86423359ad62",
+      "name": "returning user input1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $json;\n\nconst hasData =\n  data.data &&\n  data.data.restaurant_count > 0 &&\n  Array.isArray(data.data.restaurant_lists) &&\n  data.data.restaurant_lists.length > 0;\n\nlet result;\n\nif (!hasData) {\n  result = {\n    status: data.status ?? 2,\n    message: \"No data found.\",\n    restaurant_name: data.restaurant_name,\n    item: data.item\n  };\n} else {\n  result = {\n    restaurant_data: data.data.restaurant_lists[0]\n  };\n}\n\nreturn [{ json: result }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        176,
+        -272
+      ],
+      "id": "6d86f526-cda9-4218-89d5-73b92f5e1f41",
+      "name": "handle api1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://eatancedevappapi.eatanceapp.com/v8/get-table-booking-details",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"app_token\":\"MV8yNTIwMDgyMF8zLjIuMF80NF84\",\"language_id\":\"1\",\"restaurant_id\":{{ $json.restaurant_data.id }},\"isEncryptionActive\":false,\"platform\":\"android\",\"user_id\":\"100146\",\"latitude\":\"43.711276719200114\",\"longitude\":\"-79.34675755943526\"}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        416,
+        -272
+      ],
+      "id": "8093f27e-a606-4034-857d-e137f9f90807",
+      "name": "Get Table Booking Details Api1",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "Hgr4rTrtdOiAsvsp",
+          "name": "Bearer Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Enhanced Restaurant booking validation code for n8n\nconst bookingData = $input.all()[0].json;\n\n// Helper function to convert date from DD/MM/YYYY to YYYY-MM-DD\nfunction convertDateFormat(dateString) {\n  const [day, month, year] = dateString.split('/');\n  return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;\n}\n\n// Helper function to create time slots\nfunction createTimeSlots(startTime, endTime, intervalMinutes) {\n  const slots = [];\n  const [startHour, startMinute] = startTime.split(':').map(Number);\n  const [endHour, endMinute] = endTime.split(':').map(Number);\n  \n  let currentMinutes = startHour * 60 + startMinute;\n  const endMinutes = endHour * 60 + endMinute;\n  \n  while (currentMinutes <= endMinutes) {\n    const hours = Math.floor(currentMinutes / 60);\n    const minutes = currentMinutes % 60;\n    slots.push(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`);\n    currentMinutes += intervalMinutes;\n  }\n  \n  return slots;\n}\n\n// Helper function to check if time is in the past\nfunction isTimePast(dateStr, timeStr) {\n  const now = new Date();\n  const [hours, minutes] = timeStr.split(':').map(Number);\n  const bookingDateTime = new Date(dateStr);\n  bookingDateTime.setHours(hours, minutes, 0, 0);\n  \n  return bookingDateTime < now;\n}\n\n// Helper function to check if a time slot is valid (exists in available slots)\nfunction isValidTimeSlot(requestedTime, availableSlots) {\n  return availableSlots.includes(requestedTime);\n}\n\n// Helper function to get future slots for today\nfunction getFutureSlots(slots, dateStr) {\n  const now = new Date();\n  const currentDate = new Date(dateStr);\n  \n  if (currentDate.toDateString() === now.toDateString()) {\n    const currentHour = now.getHours();\n    const currentMinute = now.getMinutes();\n    const currentTimeInMinutes = currentHour * 60 + currentMinute;\n    \n    return slots.filter(slot => {\n      const [hour, minute] = slot.split(':').map(Number);\n      const slotTimeInMinutes = hour * 60 + minute;\n      return slotTimeInMinutes > currentTimeInMinutes;\n    });\n  }\n  \n  return slots;\n}\n\ntry {\n  // Convert the requested date to YYYY-MM-DD format\n  const requestedDate = convertDateFormat(bookingData.date);\n  const mealType = bookingData.meal_type.toLowerCase();\n  const requestedTime = bookingData.time;\n  const tableConfigurations = bookingData.data.table_timings_configurations;\n  const timeInterval = parseInt(bookingData.data.table_booking_time_interval);\n  \n  // Check if requested date is available\n  const availableDate = tableConfigurations.find(config => config.date === requestedDate);\n  \n  if (!availableDate) {\n    // Return available date options\n    const availableDates = tableConfigurations.map(config => ({\n      date: config.date,\n      day_name: config.day_name,\n      lunch_hours: `${config.lunch_open} - ${config.lunch_close}`,\n      dinner_hours: `${config.dinner_open} - ${config.dinner_close}`\n    }));\n    \n    const availableDatesString = availableDates.map(date => \n      `${date.day_name} (${date.date})`\n    ).join(', ');\n    \n    return [{\n      json: {\n        status: false,\n        message: `Requested date ${bookingData.date} is not available. Please choose from available dates: ${availableDatesString}`,\n        available_dates: availableDates,\n        should_call_api: 0\n      }\n    }];\n  }\n  \n  // Get the appropriate opening and closing times based on meal type\n  let openTime, closeTime;\n  \n  if (mealType === 'lunch') {\n    openTime = availableDate.lunch_open;\n    closeTime = availableDate.lunch_close;\n  } else if (mealType === 'dinner') {\n    openTime = availableDate.dinner_open;\n    closeTime = availableDate.dinner_close;\n  } else {\n    return [{\n      json: {\n        status: false,\n        message: \"Invalid meal type. Please specify 'lunch' or 'dinner'.\",\n        should_call_api: 0\n      }\n    }];\n  }\n  \n  // Create time slots\n  const timeSlots = createTimeSlots(openTime, closeTime, timeInterval);\n  \n  // Get available slots (considering past times for today)\n  const availableSlots = getFutureSlots(timeSlots, requestedDate);\n  \n  if (availableSlots.length === 0) {\n    return [{\n      json: {\n        status: false,\n        message: `No available slots for ${mealType} on ${availableDate.day_name}. Please choose a different date or meal time.`,\n        requested_time: requestedTime,\n        meal_type: mealType,\n        date: requestedDate,\n        should_call_api: 0\n      }\n    }];\n  }\n  \n  // Check if requested time is in the past\n  if (isTimePast(requestedDate, requestedTime)) {\n    const availableSlotsString = availableSlots.join(', ');\n    \n    return [{\n      json: {\n        status: false,\n        message: `Requested time ${requestedTime} has passed. Here are the available slots for ${mealType} on ${availableDate.day_name}: ${availableSlotsString}. Please choose one of these times.`,\n        available_slots: availableSlots,\n        meal_type: mealType,\n        date: requestedDate,\n        requested_time: requestedTime,\n        should_call_api: 0,\n        awaiting_time_selection: true\n      }\n    }];\n  }\n  \n  // Check if requested time is a valid slot\n  if (!isValidTimeSlot(requestedTime, availableSlots)) {\n    const availableSlotsString = availableSlots.join(', ');\n    \n    return [{\n      json: {\n        status: false,\n        message: `Requested time ${requestedTime} is not available for ${mealType} on ${availableDate.day_name}. Here are the available slots: ${availableSlotsString}. Please choose one of these times.`,\n        available_slots: availableSlots,\n        meal_type: mealType,\n        date: requestedDate,\n        requested_time: requestedTime,\n        should_call_api: 0,\n        awaiting_time_selection: true\n      }\n    }];\n  }\n  \n  // If we reach here, the requested time is valid and available\n  return [{\n    json: {\n      status: true,\n      message: `Booking confirmed for ${bookingData.restaurant_name} on ${availableDate.day_name} (${requestedDate}) at ${requestedTime} for ${bookingData.number_of_people} people.`,\n      booking_details: {\n        restaurant_name: bookingData.restaurant_name,\n        date: requestedDate,\n        day_name: availableDate.day_name,\n        time: requestedTime,\n        meal_type: mealType,\n        number_of_people: bookingData.number_of_people,\n        special_request: bookingData.special_request,\n        requested_time: requestedTime,\n        assigned_time: requestedTime,\n        meal_hours: mealType === 'lunch' ? `${openTime} - ${closeTime}` : `${openTime} - ${closeTime}`\n      },\n      available_slots: timeSlots,\n      table_booking_time_interval: $input.first().json.data.table_booking_time_interval,\n      restaurant_id: $input.first().json.restaurant_id,\n      should_add_special_request: $input.first().json.should_add_special_request,\n      should_call_api: 1\n    }\n  }];\n  \n} catch (error) {\n  return [{\n    json: {\n      status: false,\n      message: \"An error occurred while processing the booking request.\",\n      error: error.message,\n      should_call_api: 0\n    }\n  }];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1472,
+        -288
+      ],
+      "id": "1d83bf20-78de-411b-84bf-eb483a77fc6c",
+      "name": "Handling all info received from user1"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  json: {\n    restaurant_id: $input.first().json.restaurant_data.id,  \n  }\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        -448
+      ],
+      "id": "c8ff96ac-f375-4a27-9661-d0f6208ff2a3",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://eatancedevappapi.eatanceapp.com/v8/confirm-booking",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Usertimezone",
+              "value": "Asia/Kolkata"
+            },
+            {
+              "name": "secondsFromGMT",
+              "value": "19800"
+            },
+            {
+              "name": "userTimeZoneAbbreviation",
+              "value": "IST"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"additional_request\":\"{{ $json.booking_details.special_request }}\",\"app_token\":\"MV8yNTIwMDgyMF8zLjIuMF80NF84\",\"booking_date\":\"{{ $json.booking_details.date }}\",\"language_id\":\"1\",\"no_of_people\":\"{{ $json.booking_details.number_of_people }}\",\"occasion\":\"\",\"restaurant_id\":\"{{ $json.restaurant_id }}\",\"start_time\":\"{{ $json.booking_details.assigned_time }}\",\"table_booking_time_interval\":\"{{ $json.table_booking_time_interval }}\",\"table_location_id\":\"\",\"isEncryptionActive\":false,\"platform\":\"android\",\"user_id\":\"100146\",\"latitude\":\"23.0122364\",\"longitude\":\"72.5041849\"}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2560,
+        -272
+      ],
+      "id": "74fe3c2a-63e2-4123-8c69-d158e6465849",
+      "name": "Confirm Booking api1",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "Hgr4rTrtdOiAsvsp",
+          "name": "Bearer Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "true",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "id": "187f98ca-c76c-4964-828c-7203014b3c78"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "dd5a4ba3-a646-4719-95f4-d676d8a62f8f",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "false",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "false",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        2800,
+        -272
+      ],
+      "id": "1fe981bd-6430-48f9-9dab-74b98f3d9fb9",
+      "name": "Confirm Booking api handler1"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {message: \"Something went wrong\"}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3120,
+        -144
+      ],
+      "id": "f12c9a91-e5e6-4fcd-a6a2-ba0354e7f047",
+      "name": "Confirm Booking api error msg1"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $json"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3072,
+        -400
+      ],
+      "id": "e79ee10e-ed46-4450-a34a-50dda76bd344",
+      "name": "Confirm Booking api success msg1"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $json"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        -288
+      ],
+      "id": "828d71e5-7c31-4d24-b842-2d86e7b69177",
+      "name": "Get Table Booking Details api success msg1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "true",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "id": "187f98ca-c76c-4964-828c-7203014b3c78"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "dd5a4ba3-a646-4719-95f4-d676d8a62f8f",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "false",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "false",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        672,
+        -272
+      ],
+      "id": "c9d35cab-eeb9-457d-9d0c-d1e03be55e69",
+      "name": "Get Table Booking Details api handler1"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {message: \"Something went wrong\"}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        -96
+      ],
+      "id": "260be764-109f-4a94-a19f-4f066f14b855",
+      "name": "Get Table Booking Details api error msg1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.should_call_api }}",
+                    "rightValue": 0,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "ee182edf-80bd-4934-9b25-c9beb4a72260"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "660ca35b-cd52-473e-83de-6c2e5150be90",
+                    "leftValue": "={{ $json.should_call_api }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        784,
+        -1056
+      ],
+      "id": "9ff5143e-141c-4325-a02d-716c07e6da05",
+      "name": "Confirm table booking api call conditions"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $json"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1232,
+        -1296
+      ],
+      "id": "f8f16596-4693-44bf-9381-d75ad71ce71b",
+      "name": "Should call api == 0 msg"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  json: {\n    message: \"Do you have any special requests for your booking, such as seating preferences or dietary requirements? If not, just say 'no' and we'll proceed with your reservation\",\n    \n  }\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2336,
+        -512
+      ],
+      "id": "cd9050f2-5bbc-477a-8191-3cc810da2a9c",
+      "name": "Code4"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.booking_details.special_request.isEmpty() && $json.should_add_special_request.isEmpty() }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "id": "a7de8393-0336-4b24-a6c0-51ef448e46cb"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "f4146a9e-5ccd-42df-8509-610f8aa58cfb",
+                    "leftValue": "={{ ($json.booking_details.special_request.isEmpty() && $json.should_add_special_request.isNotEmpty()) || ($json.booking_details.special_request.isNotEmpty() && $json.should_add_special_request.isEmpty())}}",
+                    "rightValue": "\"",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        2064,
+        -288
+      ],
+      "id": "fafb0ab0-6870-4ed1-a0ad-0cc7631a917f",
+      "name": "special_request handler"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.should_call_api }}",
+                    "rightValue": 0,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "ee182edf-80bd-4934-9b25-c9beb4a72260"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "660ca35b-cd52-473e-83de-6c2e5150be90",
+                    "leftValue": "={{ $json.should_call_api }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1664,
+        -288
+      ],
+      "id": "626cef4e-bd0b-4272-bf0d-be2ba32dff66",
+      "name": "Confirm table booking api call conditions1"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $json"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1968,
+        -512
+      ],
+      "id": "6502546d-9120-43b4-b50d-e067298a784f",
+      "name": "Should call api == 0 msg1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Parameter Checker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Parameter Checker",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Parameter Checker",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parameter Checker": {
+      "main": [
+        [
+          {
+            "node": "Setting user_input_status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Message giver",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "Message giver",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Message giver",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Parameter Checker",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get restaurant api": {
+      "main": [
+        [
+          {
+            "node": "get restaurant api handler",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get restaurant api handler": {
+      "main": [
+        [
+          {
+            "node": "handle api",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "get restaurant error msg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Handling all info received from user",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "returning user input": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "handle api": {
+      "main": [
+        [
+          {
+            "node": "Get Table Booking Details Api",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Table Booking Details Api": {
+      "main": [
+        [
+          {
+            "node": "Get Table Booking Details api handler",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch on the basis of user_input_status": {
+      "main": [
+        [
+          {
+            "node": "returning user input",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get restaurant api",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get restaurant api1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "returning user input1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Important info missing message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setting user_input_status": {
+      "main": [
+        [
+          {
+            "node": "Switch on the basis of user_input_status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory2": {
+      "ai_memory": [
+        [
+          {
+            "node": "Parameter Checker1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser2": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Parameter Checker1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Parameter Checker1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handling all info received from user": {
+      "main": [
+        [
+          {
+            "node": "Confirm table booking api call conditions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirm Booking api": {
+      "main": [
+        [
+          {
+            "node": "Confirm Booking api handler",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirm Booking api handler": {
+      "main": [
+        [
+          {
+            "node": "Confirm Booking api success msg",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Confirm Booking api error msg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Table Booking Details api success msg": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Get Table Booking Details api handler": {
+      "main": [
+        [
+          {
+            "node": "Get Table Booking Details api success msg",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Table Booking Details api error msg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get restaurant api1": {
+      "main": [
+        [
+          {
+            "node": "get restaurant api handler1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get restaurant api handler1": {
+      "main": [
+        [
+          {
+            "node": "handle api1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "get restaurant error msg1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Handling all info received from user1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "returning user input1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "handle api1": {
+      "main": [
+        [
+          {
+            "node": "Get Table Booking Details Api1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Table Booking Details Api1": {
+      "main": [
+        [
+          {
+            "node": "Get Table Booking Details api handler1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handling all info received from user1": {
+      "main": [
+        [
+          {
+            "node": "Confirm table booking api call conditions1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirm Booking api1": {
+      "main": [
+        [
+          {
+            "node": "Confirm Booking api handler1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirm Booking api handler1": {
+      "main": [
+        [
+          {
+            "node": "Confirm Booking api success msg1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Confirm Booking api error msg1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Table Booking Details api success msg1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Get Table Booking Details api handler1": {
+      "main": [
+        [
+          {
+            "node": "Get Table Booking Details api success msg1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Table Booking Details api error msg1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirm table booking api call conditions": {
+      "main": [
+        [
+          {
+            "node": "Should call api == 0 msg",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Confirm Booking api",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "special_request handler": {
+      "main": [
+        [
+          {
+            "node": "Code4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Confirm Booking api1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirm table booking api call conditions1": {
+      "main": [
+        [
+          {
+            "node": "Should call api == 0 msg1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "special_request handler",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ef54cfc7-05e3-4c86-ac78-becbefc8c9f5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f3854aadc85760a30bce675f45820841c8977e6c80bcc93eedb2f82a1754ef84"
+  },
+  "id": "WZjhfsmI0EKUpNic",
+  "tags": []
+}
