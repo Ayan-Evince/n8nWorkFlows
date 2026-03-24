@@ -57,6 +57,1149 @@
     },
     {
       "parameters": {
+        "jsCode": "return { message: \"Please enter the name of the restaurant.\" };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        -64
+      ],
+      "id": "a9dc3141-45ad-4a4d-acde-441f14e3453f",
+      "name": "no restaurant name"
+    },
+    {
+      "parameters": {
+        "jsCode": "return { message: \"Please enter the name of the Item you want to order.\" };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        -288
+      ],
+      "id": "8d2eeb48-1f2a-4b5d-aff2-19bfb0a05452",
+      "name": "no item name"
+    },
+    {
+      "parameters": {
+        "jsCode": "const userData = $json.userData[0].json;\nconst restaurants = $json.allRestaurantsData.restaurant;\n\nconst userRestaurant = userData.userInputRestaurant.toLowerCase().trim();\n\nconst matchedRestaurant = restaurants.find(r => \n  r.name.toLowerCase().trim().includes(userRestaurant) || \n  userRestaurant.includes(r.name.toLowerCase().trim())\n);\n\nif (matchedRestaurant) {\n  return [{\n    json: {\n      isRestaurantAvailable: 1,\n      restaurantId: matchedRestaurant.restuarant_id,\n      restaurantName: matchedRestaurant.name,\n      userInputItem: userData.userInputItem,\n      userInputRestaurant: userData.userInputRestaurant,\n      userInputAddOns: userData.userInputAddOns,\n      userMessage: userData.userMessage,\n      userInputStatus: userData.userInputStatus,\n      userData: userData\n    }\n  }];\n} else {\n  return [{\n    json: {\n      isRestaurantAvailable: 0,\n      message: `No restaurant found matching \"${userData.userInputRestaurant}\"`,\n      userInputItem: userData.userInputItem,\n      userInputRestaurant: userData.userInputRestaurant,\n      userInputAddOns: userData.userInputAddOns,\n      userMessage: userData.userMessage,\n      userInputStatus: userData.userInputStatus,\n      userData: userData\n    }\n  }];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        656,
+        144
+      ],
+      "id": "11c7a38d-8971-4930-8ef6-36871eac379b",
+      "name": "handle api"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://mrpdev.eatanceapp.com/v6/api/getHome",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $json.authorizationToken }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "language_slug",
+              "value": "={{ $json.languageSlug }}"
+            },
+            {
+              "name": "latitude",
+              "value": "={{ $json.latitude }}"
+            },
+            {
+              "name": "longitude",
+              "value": "={{ $json.longitude }}"
+            },
+            {
+              "name": "distance",
+              "value": "={{ $json.distance }}"
+            },
+            {
+              "name": "page_no",
+              "value": "={{ $json.pageNo }}"
+            },
+            {
+              "name": "count",
+              "value": "={{ $json.count }}"
+            },
+            {
+              "name": "user_id",
+              "value": "={{ $json.userId }}"
+            },
+            {
+              "name": "user_timezone",
+              "value": "={{ $json.userTimezone }}"
+            },
+            {
+              "name": "response_flag",
+              "value": "={{ $json.responseFlag }}"
+            },
+            {
+              "name": "platform",
+              "value": "={{ $json.platform }}"
+            },
+            {
+              "name": "orderMode",
+              "value": "={{ $json.orderMode }}"
+            },
+            {
+              "name": "food",
+              "value": "={{ $json.food }}"
+            },
+            {
+              "name": "app_token",
+              "value": "={{ $json.appToken }}"
+            },
+            {
+              "name": "category_id",
+              "value": "={{ $json.category_id }}"
+            },
+            {
+              "name": "offersFreeDelivery",
+              "value": "={{ $json.offersFreeDelivery }}"
+            },
+            {
+              "name": "sortBy",
+              "value": "={{ $json.sortBy }}"
+            },
+            {
+              "name": "availability",
+              "value": "={{ $json.availability }}"
+            },
+            {
+              "name": "itemSearch",
+              "value": "={{ $json.itemSearch }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -176,
+        144
+      ],
+      "id": "93c724ec-2885-49a8-82bb-b4240ee66f58",
+      "name": "Get restaurant api"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('input for AI model').item.json.sessionId }}",
+        "contextWindowLength": 40000
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -1328,
+        528
+      ],
+      "id": "a558e9eb-8fc4-473b-8b48-70c7f4a0b241",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      userData: $input.all()\n    }\n  }\n]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -64,
+        384
+      ],
+      "id": "21c20796-4726-4bec-a0c5-14bcde5b3df9",
+      "name": "returning user input"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "09cdb1c1-8869-4bdb-a52d-c08a4a344fc0",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1840,
+        208
+      ],
+      "id": "478afbb0-cdc3-4e1e-837b-fd91ca4c36bf",
+      "name": "Webhook",
+      "webhookId": "09cdb1c1-8869-4bdb-a52d-c08a4a344fc0"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.isRestaurantAvailable }}",
+                    "rightValue": 0,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "465ba742-63de-4a1a-a713-ee051345bdf6"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "8ba9e57a-7ce4-4abb-81ca-2e278915ef74",
+                    "leftValue": "={{ $json.isRestaurantAvailable }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1056,
+        144
+      ],
+      "id": "156cfdc6-bde2-4248-bc49-f572ff86a1f2",
+      "name": "Switch2"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  json: {\n    message: \"No restaurant found\"\n  }\n}]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1360,
+        -48
+      ],
+      "id": "b040eae4-9685-4cfd-96aa-1973fadda28f",
+      "name": "Code in JavaScript6"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "75afc74b-76b7-4400-8c85-136d7b96e0bd"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "f5000b9f-7ae9-4561-9014-ecef9ff68499",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "notEquals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1856,
+        288
+      ],
+      "id": "06dc7ddb-1d39-40a0-a663-7f424e003eb6",
+      "name": "Switch3"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  json: {\n    message: $input.first().json.message\n  }\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2064,
+        608
+      ],
+      "id": "78f6c1e6-2b08-4b98-8c66-80b572394dbd",
+      "name": "Code in JavaScript7"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://mrpdev.eatanceapp.com/v6/api/getRestaurantDetail",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $json.userData[0].json.authorizationToken }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "language_slug",
+              "value": "={{ $json.userData[0].json.languageSlug }}"
+            },
+            {
+              "name": "restaurant_id",
+              "value": "={{ $json.restaurantId }}"
+            },
+            {
+              "name": "content_id",
+              "value": "={{ $json.restaurantId }}"
+            },
+            {
+              "name": "food",
+              "value": "=\"\""
+            },
+            {
+              "name": "price",
+              "value": "\"\""
+            },
+            {
+              "name": "availability",
+              "value": "0"
+            },
+            {
+              "name": "user_id",
+              "value": "={{ $json.userData[0].json.userId }}"
+            },
+            {
+              "name": "isEvent",
+              "value": "0"
+            },
+            {
+              "name": "send_categories",
+              "value": "0"
+            },
+            {
+              "name": "user_timezone",
+              "value": "={{ $json.userData[0].json.userTimezone }}"
+            },
+            {
+              "name": "platform",
+              "value": "={{ $json.userData[0].json.platform }}"
+            },
+            {
+              "name": "app_token",
+              "value": "={{ $json.userData[0].json.appToken }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1360,
+        160
+      ],
+      "id": "0c39415c-ecce-4ccb-9a5f-8d57524b8b92",
+      "name": "getRestaurantDetail api"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://mrpdev.eatanceapp.com/v6/api/getRestaurantCategories",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $json.userData.authorizationToken }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "language_slug",
+              "value": "={{ $json.userData.languageSlug }}"
+            },
+            {
+              "name": "restaurant_id",
+              "value": "={{ $json.restaurant[0].restuarant_id }}"
+            },
+            {
+              "name": "app_token",
+              "value": "={{ $json.userData.appToken }}"
+            },
+            {
+              "name": "availability",
+              "value": "=0"
+            },
+            {
+              "name": "content_id",
+              "value": "={{ $json.restaurant[0].restuarant_id }}"
+            },
+            {
+              "name": "food",
+              "value": "\"\""
+            },
+            {
+              "name": "isEvent",
+              "value": "0"
+            },
+            {
+              "name": "platform",
+              "value": "={{ $json.userData.platform }}"
+            },
+            {
+              "name": "price",
+              "value": "\"\""
+            },
+            {
+              "name": "user_timezone",
+              "value": "={{ $json.userData.userTimezone }}"
+            },
+            {
+              "name": "category_id",
+              "value": "\"\""
+            },
+            {
+              "name": "count",
+              "value": "10"
+            },
+            {
+              "name": "page_no",
+              "value": "1"
+            },
+            {
+              "name": "send_foodtypes",
+              "value": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2304,
+        0
+      ],
+      "id": "460601c9-e261-4a05-b9b5-4ab1df369afd",
+      "name": "getRestaurantCategories api"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://mrpdev.eatanceapp.com/v6/api/searchRestaurantMenu",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $json.userData.authorizationToken }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "app_token",
+              "value": "={{ $json.userData.appToken }}"
+            },
+            {
+              "name": "assigned_food_types",
+              "value": "={{ $json.assigned_food_types }}"
+            },
+            {
+              "name": "availability",
+              "value": "={{0}}"
+            },
+            {
+              "name": "content_id",
+              "value": "={{ $json.contentId }}"
+            },
+            {
+              "name": "count",
+              "value": "={{10}}"
+            },
+            {
+              "name": "food",
+              "value": "={{ \"\" }}"
+            },
+            {
+              "name": "item_type",
+              "value": "={{\"1\"}}"
+            },
+            {
+              "name": "language_slug",
+              "value": "={{ $json.userData.languageSlug }}"
+            },
+            {
+              "name": "menu_search",
+              "value": "={{ $json.userData.userInputItem }}"
+            },
+            {
+              "name": "page_no",
+              "value": "={{1}}"
+            },
+            {
+              "name": "platform",
+              "value": "={{ $json.userData.platform }}"
+            },
+            {
+              "name": "price",
+              "value": "={{\"\"}}"
+            },
+            {
+              "name": "restaurant_id",
+              "value": "={{ $json.restaurantId }}"
+            },
+            {
+              "name": "shouldShowKeyboard",
+              "value": "={{true}}"
+            },
+            {
+              "name": "user_timezone",
+              "value": "={{ $json.userData.userTimezone }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3136,
+        -16
+      ],
+      "id": "6b07b540-b9dc-4a1f-af4e-91f84a44a266",
+      "name": "searchRestaurantMenu api"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "75afc74b-76b7-4400-8c85-136d7b96e0bd"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "f5000b9f-7ae9-4561-9014-ecef9ff68499",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "notEquals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        2816,
+        240
+      ],
+      "id": "22a81fa1-f789-48cd-9fed-18f0cc31f0ba",
+      "name": "Switch4"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  json: {\n    message: $input.first().json.message\n  }\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3168,
+        416
+      ],
+      "id": "ebe437d7-1d4f-475e-a0db-8e0ccef7b1ff",
+      "name": "Code in JavaScript8"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.restaurant[0].timings.closing.toLowerCase() }}",
+                    "rightValue": "open",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "a0e10247-d94c-4482-9413-b5adf41764bd"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "16ddb3e9-6dc2-4fae-8745-7237a87ce0ad",
+                    "leftValue": "={{ $json.restaurant[0].timings.closing.toLowerCase() }}",
+                    "rightValue": "open",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEquals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        2048,
+        272
+      ],
+      "id": "b5313c79-d9a4-46b3-97a7-048e51e54cf9",
+      "name": "Switch5"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  json: {\n    message: $input.first().json.message\n  }\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2304,
+        464
+      ],
+      "id": "b4c36329-720a-46ac-9039-755513784dce",
+      "name": "Code in JavaScript9"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  json: {\n     userData: $input.first().json.userData[0].json\n  }\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1360,
+        384
+      ],
+      "id": "4ff71c39-c0dc-4709-a12f-6c45cc2fd90c",
+      "name": "Code in JavaScript10"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1648,
+        288
+      ],
+      "id": "654e3041-1ae5-49ca-9fff-de05b35d654d",
+      "name": "Merge6"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  json: {\n     userData: $input.first().json.userData,\n    restaurantId: $input.first().json.restaurant[0].restuarant_id,\n    contentId: $input.first().json.restaurant[0].content_id\n  }\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2304,
+        256
+      ],
+      "id": "ee795993-d5c1-4fd3-abd8-fd639bd762cb",
+      "name": "Code in JavaScript11"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  json: {\n     userData: $input.first().json.userData,\n    restaurantId: $input.first().json.restaurantId,\n    contentId: $input.first().json.contentId\n  }\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3152,
+        224
+      ],
+      "id": "cb14de50-58f0-436d-9094-754055544acd",
+      "name": "Code in JavaScript12"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "75afc74b-76b7-4400-8c85-136d7b96e0bd"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "f5000b9f-7ae9-4561-9014-ecef9ff68499",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "notEquals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        3744,
+        208
+      ],
+      "id": "2470c067-21f7-4efb-9674-eb177409cfc2",
+      "name": "Switch6"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  json: {\n    message: $input.first().json.message\n  }\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4048,
+        384
+      ],
+      "id": "6fd342e1-8961-4991-b304-f8e18aff2134",
+      "name": "Code in JavaScript13"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2592,
+        240
+      ],
+      "id": "72149ea4-12df-4294-8e5f-a2b329a86afc",
+      "name": "Merge5"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://mrpdev.eatanceapp.com/v6/api/addtoCart",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $json.Authorization }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "app_token",
+              "value": "={{ $json.requestBody.app_token }}"
+            },
+            {
+              "name": "cart_id",
+              "value": "={{ $json.requestBody.cart_id }}"
+            },
+            {
+              "name": "coupon_array",
+              "value": "={{[]}}"
+            },
+            {
+              "name": "driver_tip",
+              "value": "={{ \"\" }}"
+            },
+            {
+              "name": "earning_points",
+              "value": "={{ \"\" }}"
+            },
+            {
+              "name": "is_creditcard",
+              "value": "={{ $json.requestBody.is_creditcard }}"
+            },
+            {
+              "name": "isLoggedIn",
+              "value": "={{ $json.requestBody.isLoggedIn }}"
+            },
+            {
+              "name": "is_wallet_applied",
+              "value": "={{ $json.requestBody.is_wallet_applied }}"
+            },
+            {
+              "name": "items",
+              "value": "={{ $json.requestBody.items }}"
+            },
+            {
+              "name": "language_slug",
+              "value": "={{ $json.requestBody.language_slug }}"
+            },
+            {
+              "name": "latitude",
+              "value": "={{ $json.requestBody.latitude }}"
+            },
+            {
+              "name": "longitude",
+              "value": "={{ $json.requestBody.longitude }}"
+            },
+            {
+              "name": "order_delivery",
+              "value": "={{ $json.requestBody.order_delivery }}"
+            },
+            {
+              "name": "platform",
+              "value": "={{ $json.requestBody.platform }}"
+            },
+            {
+              "name": "restaurant_id",
+              "value": "={{ $json.requestBody.restaurant_id }}"
+            },
+            {
+              "name": "scheduled_date",
+              "value": "={{ $json.requestBody.scheduled_date }}"
+            },
+            {
+              "name": "slot_close_time",
+              "value": "={{ $json.requestBody.slot_close_time }}"
+            },
+            {
+              "name": "slot_open_time",
+              "value": "={{ $json.requestBody.slot_open_time }}"
+            },
+            {
+              "name": "tip_percent_val",
+              "value": "={{ $json.requestBody.tip_percent_val }}"
+            },
+            {
+              "name": "user_id",
+              "value": "={{ $json.requestBody.user_id }}"
+            },
+            {
+              "name": "user_timezone",
+              "value": "={{ $json.requestBody.user_timezone }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        4624,
+        416
+      ],
+      "id": "b14d29bf-6755-4912-8479-06e0f3a85c05",
+      "name": "addtoCart  api"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "75afc74b-76b7-4400-8c85-136d7b96e0bd"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "f5000b9f-7ae9-4561-9014-ecef9ff68499",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "notEquals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        4864,
+        416
+      ],
+      "id": "5d02b3bd-dffc-4730-8bac-f7ce20593649",
+      "name": "Switch7"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  json: {\n    message: $input.first().json.message\n  }\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5152,
+        640
+      ],
+      "id": "e2c534ab-b7c3-401f-87db-eb6961e0e8da",
+      "name": "Code in JavaScript14"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  json: {\n    cartId: $input.first().json.cart_id,\n    message: $input.first().json.message\n  }\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5168,
+        256
+      ],
+      "id": "a1482441-d62d-4366-ba29-3dba1a434d39",
+      "name": "Code in JavaScript15"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Get data from previous node\nconst input = $input.all()[0].json;\nconst userData = input.userData;\nconst menuItem = input.menu_item[0]; \n\n// 2. Prepare basic item details\nconst quantity = 1;\nconst basePrice = parseFloat(menuItem.price || \"0\");\nlet totalAddonsPrice = 0;\nconst selectedAddonsCategories = [];\n\n// --- MANDATORY CUSTOMIZATION LOGIC ---\n// If the item is customizable, check for mandatory categories\nif (menuItem.is_customize === \"1\" && menuItem.addons_category_list) {\n  menuItem.addons_category_list.forEach(category => {\n    // Logic matches CustomizationScreen.kt: Only auto-select if mandatory\n    if (category.is_mandatory === \"1\" && category.addons_list && category.addons_list.length > 0) {\n      const firstAddon = category.addons_list[0];\n      \n      selectedAddonsCategories.push({\n        addons_category: category.addons_category || \"\",\n        addons_category_id: category.addons_category_id || \"\",\n        addons_list: [{\n          add_ons_id: firstAddon.add_ons_id || \"\",\n          add_ons_name: firstAddon.add_ons_name || \"\",\n          add_ons_price: firstAddon.add_ons_price || \"0.00\"\n        }]\n      });\n      \n      // Add to running total of addon prices\n      totalAddonsPrice += parseFloat(firstAddon.add_ons_price || \"0\");\n    }\n  });\n}\n\n// 3. Calculate Totals (Internal project logic: (Base + Addons) * Quantity)\nconst subTotal = (basePrice * quantity).toFixed(2);\nconst itemTotal = ((basePrice + totalAddonsPrice) * quantity).toFixed(2);\n\nconst cartItem = {\n  menu_id: menuItem.menu_id,\n  name: menuItem.name || \"\",\n  price: basePrice.toFixed(2),\n  menu_content_id: menuItem.menu_content_id || \"\",\n  offer_price: menuItem.offer_price || \"\",\n  menu_detail: menuItem.menu_detail || \"\",\n  image: menuItem.image || \"\",\n  availability: menuItem.availability || \"\",\n  food_type_id: menuItem.food_type_id || \"\",\n  food_type_name: menuItem.food_type_name || \"\",\n  is_customize: parseInt(menuItem.is_customize || \"0\"),\n  is_deal: menuItem.is_deal || \"0\",\n  status: menuItem.status || \"1\",\n  is_combo_item: parseInt(menuItem.is_combo_item || \"0\"),\n  combo_item_details: menuItem.combo_item_details || \"\",\n  is_recipes_menu: menuItem.is_recipes_menu || 0,\n  in_stock: menuItem.in_stock || \"1\",\n  quantity: quantity,\n  subTotal: subTotal,\n  itemTotal: itemTotal,\n  comment: null, \n  addons_category_list: selectedAddonsCategories \n};\n\n// 4. Stringify the items object (Required by API)\nconst itemsJsonString = JSON.stringify({ items: [cartItem] });\n\n// 5. Create the main AddToCartRequest body\nconst requestBody = {\n  app_token: userData.appToken || \"\",\n  cart_id: 0,\n  items: itemsJsonString,\n  restaurant_id: input.restaurantId || \"\",\n  user_id: userData.userId || \"\",\n  isLoggedIn: parseInt(userData.userId) > 0 ? 1 : 0,\n  latitude: userData.latitude || \"23.0123054\",\n  longitude: userData.longitude || \"72.5040315\",\n  language_slug: userData.languageSlug || \"en\",\n  order_delivery: \"Delivery\",\n  platform: \"android\",\n  user_timezone: userData.userTimezone || \"Asia/Kolkata\",\n  tip_percent_val: \"0\",\n  driver_tip: \"\",\n  is_wallet_applied: 0,\n  is_creditcard: \"yes\",\n  scheduled_date: \"\",\n  slot_open_time: \"\",\n  slot_close_time: \"\"\n};\n\n// 6. Wrap for n8n output\nreturn { \n  json: { \n    requestBody, \n    \"Authorization\": userData.authorizationToken || \"Basic ZWF0YW5jZV8yMDI1X21ycDpFYXRhbmNlQEAyQDI1\"\n  },\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4352,
+        416
+      ],
+      "id": "0f7f0965-0249-48a0-9525-031fe5b3cc4a",
+      "name": "Code in JavaScript16"
+    },
+    {
+      "parameters": {
+        "jsCode": "var languageSlug = String($input.first().json.body.languageSlug ?? '')\nvar latitude = String($input.first().json.body.latitude ?? '')\nvar longitude = String($input.first().json.body.longitude ?? '')\nvar distance = String($input.first().json.body.distance ?? '')\nvar pageNo = String($input.first().json.body.pageNo ?? '0')\nvar count = String($input.first().json.body.count ?? '0')\nvar userId = String($input.first().json.body.userId ?? '')\nvar userTimezone = String($input.first().json.body.userTimezone ?? '')\nvar responseFlag = String($input.first().json.body.responseFlag ?? '0')\nvar platform = String($input.first().json.body.platform ?? '')\nvar orderMode = String($input.first().json.body.orderMode ?? '0')\nvar food = String($input.first().json.body.food ?? '')\nvar appToken = String($input.first().json.body.appToken ?? '')\nvar auth = String($input.first().json.body.auth ?? '')\nvar category_id = String($input.first().json.body.category_id ?? '')\nvar offersFreeDelivery = String($input.first().json.body.offersFreeDelivery ?? '0')\nvar sortBy = String($input.first().json.body.sortBy ?? '')\nvar availability = String($input.first().json.body.availability ?? '')\nvar itemSearch = String($input.first().json.body.itemSearch ?? '')\nvar rawAuth = $input.first().json.headers['authorization']\nvar authorizationToken = rawAuth.startsWith('Bearer ') \n  ? rawAuth.slice(7)  // remove \"Bearer \" prefix\n  : rawAuth\n\nreturn [\n  {\n    json: {\n      languageSlug,\n      latitude,\n      longitude,\n      distance,\n      pageNo,\n      count,\n      userId,\n      userTimezone,\n      responseFlag,\n      platform,\n      orderMode,\n      food,\n      appToken,\n      auth,\n      category_id,\n      offersFreeDelivery,\n      sortBy,\n      availability,\n      itemSearch,\n      authorizationToken\n    }\n  }\n]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1360,
+        -112
+      ],
+      "id": "22f4d6e3-85dc-4767-9c3a-e63154c81fe9",
+      "name": "data from user"
+    },
+    {
+      "parameters": {
+        "jsCode": "var chatInput = $input.first().json.body.chatInput\nvar sessionId = $input.first().json.body.sessionId\n\nreturn [\n  {\n    json: {\n      chatInput,\n      sessionId\n    }\n  }\n]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1616,
+        256
+      ],
+      "id": "efca5857-8319-4121-9542-521b3de8a0c6",
+      "name": "input for AI model"
+    },
+    {
+      "parameters": {
+        "jsCode": "return[\n  {\n    json: {\n      userInputItem: $input.first().json.output.user_input_item,\n      userInputRestaurant: $input.first().json.output.user_input_restaurant,\n      userInputAddOns: $input.first().json.output.user_input_add_ons,\n      userMessage: $input.first().json.output.user_message,\n      userInputStatus: $input.first().json.output.user_input_status\n    }\n  }\n]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1024,
+        256
+      ],
+      "id": "49f7fa43-0c58-440f-87d0-ee5c55f4ffe8",
+      "name": "output from AI"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -864,
+        80
+      ],
+      "id": "f176d982-22d3-4c24-9d5f-dfb351cf7ed0",
+      "name": "Merge AI output and user input"
+    },
+    {
+      "parameters": {
         "rules": {
           "values": [
             {
@@ -180,232 +1323,7 @@
         32
       ],
       "id": "b83f874e-5588-4f48-9cbb-7c5bcc9dc115",
-      "name": "Switch"
-    },
-    {
-      "parameters": {
-        "jsCode": "return { message: \"Please enter the name of the restaurant.\" };\n"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        224,
-        -64
-      ],
-      "id": "a9dc3141-45ad-4a4d-acde-441f14e3453f",
-      "name": "no restaurant name"
-    },
-    {
-      "parameters": {
-        "jsCode": "return { message: \"Please enter the name of the Item you want to order.\" };\n"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        224,
-        -288
-      ],
-      "id": "8d2eeb48-1f2a-4b5d-aff2-19bfb0a05452",
-      "name": "no item name"
-    },
-    {
-      "parameters": {
-        "jsCode": "const userData = $json.userData[0].json;\nconst restaurants = $json.allRestaurantsData.restaurant;\n\nconst userRestaurant = userData.userInputRestaurant.toLowerCase().trim();\n\nconst matchedRestaurant = restaurants.find(r => \n  r.name.toLowerCase().trim().includes(userRestaurant) || \n  userRestaurant.includes(r.name.toLowerCase().trim())\n);\n\nif (matchedRestaurant) {\n  return [{\n    json: {\n      isRestaurantAvailable: 1,\n      restaurantId: matchedRestaurant.restuarant_id,\n      restaurantName: matchedRestaurant.name,\n      userInputItem: userData.userInputItem,\n      userInputRestaurant: userData.userInputRestaurant,\n      userInputAddOns: userData.userInputAddOns,\n      userMessage: userData.userMessage,\n      userInputStatus: userData.userInputStatus\n    }\n  }];\n} else {\n  return [{\n    json: {\n      isRestaurantAvailable: 0,\n      message: `No restaurant found matching \"${userData.userInputRestaurant}\"`,\n      userInputItem: userData.userInputItem,\n      userInputRestaurant: userData.userInputRestaurant,\n      userInputAddOns: userData.userInputAddOns,\n      userMessage: userData.userMessage,\n      userInputStatus: userData.userInputStatus\n    }\n  }];\n}"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        832,
-        256
-      ],
-      "id": "11c7a38d-8971-4930-8ef6-36871eac379b",
-      "name": "handle api"
-    },
-    {
-      "parameters": {
-        "mode": "combine",
-        "combineBy": "combineByPosition",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3.2,
-      "position": [
-        640,
-        256
-      ],
-      "id": "9a86325d-d350-4675-acae-1b96b4500773",
-      "name": "Merge"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://mrpdev.eatanceapp.com/v6/api/getHome",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Authorization",
-              "value": "={{ $json.authorizationToken }}"
-            }
-          ]
-        },
-        "sendBody": true,
-        "contentType": "form-urlencoded",
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "language_slug",
-              "value": "={{ $json.languageSlug }}"
-            },
-            {
-              "name": "latitude",
-              "value": "={{ $json.latitude }}"
-            },
-            {
-              "name": "longitude",
-              "value": "={{ $json.longitude }}"
-            },
-            {
-              "name": "distance",
-              "value": "={{ $json.distance }}"
-            },
-            {
-              "name": "page_no",
-              "value": "={{ $json.pageNo }}"
-            },
-            {
-              "name": "count",
-              "value": "={{ $json.count }}"
-            },
-            {
-              "name": "user_id",
-              "value": "={{ $json.userId }}"
-            },
-            {
-              "name": "user_timezone",
-              "value": "={{ $json.userTimezone }}"
-            },
-            {
-              "name": "response_flag",
-              "value": "={{ $json.responseFlag }}"
-            },
-            {
-              "name": "platform",
-              "value": "={{ $json.platform }}"
-            },
-            {
-              "name": "orderMode",
-              "value": "={{ $json.orderMode }}"
-            },
-            {
-              "name": "food",
-              "value": "={{ $json.food }}"
-            },
-            {
-              "name": "app_token",
-              "value": "={{ $json.appToken }}"
-            },
-            {
-              "name": "category_id",
-              "value": "={{ $json.category_id }}"
-            },
-            {
-              "name": "offersFreeDelivery",
-              "value": "={{ $json.offersFreeDelivery }}"
-            },
-            {
-              "name": "sortBy",
-              "value": "={{ $json.sortBy }}"
-            },
-            {
-              "name": "availability",
-              "value": "={{ $json.availability }}"
-            },
-            {
-              "name": "itemSearch",
-              "value": "={{ $json.itemSearch }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        224,
-        160
-      ],
-      "id": "93c724ec-2885-49a8-82bb-b4240ee66f58",
-      "name": "Get restaurant api"
-    },
-    {
-      "parameters": {
-        "contextWindowLength": 10000
-      },
-      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
-      "typeVersion": 1.3,
-      "position": [
-        -1328,
-        528
-      ],
-      "id": "a558e9eb-8fc4-473b-8b48-70c7f4a0b241",
-      "name": "Simple Memory"
-    },
-    {
-      "parameters": {
-        "jsCode": "return [\n  {\n    json: {\n      userData: $input.all()\n    }\n  }\n]"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        288,
-        528
-      ],
-      "id": "21c20796-4726-4bec-a0c5-14bcde5b3df9",
-      "name": "returning user input"
-    },
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "09cdb1c1-8869-4bdb-a52d-c08a4a344fc0",
-        "responseMode": "lastNode",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        -1840,
-        208
-      ],
-      "id": "478afbb0-cdc3-4e1e-837b-fd91ca4c36bf",
-      "name": "Webhook",
-      "webhookId": "09cdb1c1-8869-4bdb-a52d-c08a4a344fc0"
-    },
-    {
-      "parameters": {
-        "jsCode": "var chatInput = $input.first().json.body.chatInput\nvar sessionId = $input.first().json.body.sessionId\n\nreturn [\n  {\n    json: {\n      chatInput,\n      sessionId\n    }\n  }\n]"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -1616,
-        256
-      ],
-      "id": "efca5857-8319-4121-9542-521b3de8a0c6",
-      "name": "Code in JavaScript"
-    },
-    {
-      "parameters": {
-        "jsCode": "return [\n  {\n    json: {\n      message: $input.first().json.userMessage}\n  }\n]"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -432,
-        560
-      ],
-      "id": "4b2cfbc2-371d-4c6f-96e3-30d0a0307d86",
-      "name": "Code in JavaScript1"
+      "name": "Conditions on the basis of amount of information we have"
     },
     {
       "parameters": {
@@ -418,20 +1336,177 @@
         320
       ],
       "id": "31270b0c-d973-4f38-965a-d6862a01f99a",
-      "name": "Code in JavaScript2"
+      "name": "User not sure"
     },
     {
       "parameters": {
-        "jsCode": "var languageSlug = String($input.first().json.body.languageSlug ?? '')\nvar latitude = String($input.first().json.body.latitude ?? '')\nvar longitude = String($input.first().json.body.longitude ?? '')\nvar distance = String($input.first().json.body.distance ?? '')\nvar pageNo = String($input.first().json.body.pageNo ?? '0')\nvar count = String($input.first().json.body.count ?? '0')\nvar userId = String($input.first().json.body.userId ?? '')\nvar userTimezone = String($input.first().json.body.userTimezone ?? '')\nvar responseFlag = String($input.first().json.body.responseFlag ?? '0')\nvar platform = String($input.first().json.body.platform ?? '')\nvar orderMode = String($input.first().json.body.orderMode ?? '0')\nvar food = String($input.first().json.body.food ?? '')\nvar appToken = String($input.first().json.body.appToken ?? '')\nvar auth = String($input.first().json.body.auth ?? '')\nvar category_id = String($input.first().json.body.category_id ?? '')\nvar offersFreeDelivery = String($input.first().json.body.offersFreeDelivery ?? '0')\nvar sortBy = String($input.first().json.body.sortBy ?? '')\nvar availability = String($input.first().json.body.availability ?? '')\nvar itemSearch = String($input.first().json.body.itemSearch ?? '')\nvar rawAuth = $input.first().json.headers['authorization']\nvar authorizationToken = rawAuth.startsWith('Bearer ') \n  ? rawAuth.slice(7)  // remove \"Bearer \" prefix\n  : rawAuth\n\nreturn [\n  {\n    json: {\n      languageSlug,\n      latitude,\n      longitude,\n      distance,\n      pageNo,\n      count,\n      userId,\n      userTimezone,\n      responseFlag,\n      platform,\n      orderMode,\n      food,\n      appToken,\n      auth,\n      category_id,\n      offersFreeDelivery,\n      sortBy,\n      availability,\n      itemSearch,\n      authorizationToken\n    }\n  }\n]"
+        "jsCode": "return [\n  {\n    json: {\n      message: $input.first().json.userMessage}\n  }\n]"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1360,
-        -112
+        -432,
+        560
       ],
-      "id": "22f4d6e3-85dc-4767-9c3a-e63154c81fe9",
-      "name": "Code in JavaScript3"
+      "id": "4b2cfbc2-371d-4c6f-96e3-30d0a0307d86",
+      "name": "Irrelevant message from user"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.allRestaurantsData.status }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "75afc74b-76b7-4400-8c85-136d7b96e0bd"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "f5000b9f-7ae9-4561-9014-ecef9ff68499",
+                    "leftValue": "={{ $json.allRestaurantsData.status }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "notEquals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        448,
+        160
+      ],
+      "id": "a7809e52-a269-41b9-98a3-8d3629828f7f",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  json: {\n    message: $input.first().json.message\n  }\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        608,
+        368
+      ],
+      "id": "3221b0ba-4339-4527-9a70-db32a46e6d6f",
+      "name": "get restaurant api fail"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.menu_item.length }}",
+                    "rightValue": 0,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "b21e1cc6-30fb-4b9f-8806-9532d1553a83"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "a3b19fab-98d5-4469-8bbd-6f76eaef4d05",
+                    "leftValue": "={{ $json.menu_item.length }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "gt"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "c5f0a99c-1f9c-4260-9588-50e9158527e4",
+                    "leftValue": "={{ $json.menu_item.length }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        4032,
+        176
+      ],
+      "id": "78de098c-66f3-4e9c-9fe5-85f7f6abc9d3",
+      "name": "Switch1"
     },
     {
       "parameters": {
@@ -442,24 +1517,52 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        -864,
-        80
+        3488,
+        208
       ],
-      "id": "f176d982-22d3-4c24-9d5f-dfb351cf7ed0",
-      "name": "Merge4"
+      "id": "b7e8f6dd-d5f3-4619-897c-a2b054d37a44",
+      "name": "Merge7"
     },
     {
       "parameters": {
-        "jsCode": "return[\n  {\n    json: {\n      userInputItem: $input.first().json.output.user_input_item,\n      userInputRestaurant: $input.first().json.output.user_input_restaurant,\n      userInputAddOns: $input.first().json.output.user_input_add_ons,\n      userMessage: $input.first().json.output.user_message,\n      userInputStatus: $input.first().json.output.user_input_status\n    }\n  }\n]"
+        "jsCode": "return {\n  json: {\n    message: \"No item found\"\n  }\n}"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1024,
-        256
+        4336,
+        -80
       ],
-      "id": "49f7fa43-0c58-440f-87d0-ee5c55f4ffe8",
-      "name": "Code in JavaScript4"
+      "id": "cf0783c2-0bec-4c04-8873-373fbe9c0e13",
+      "name": "Code in JavaScript17"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nconst menuItems = input.menu_item;\n\nconst itemNames = menuItems.map(item => item.name).join(', ');\n\nreturn {\n  json: {\n    message: \"There are multiple options available. Which one would you like to have: \"+itemNames\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4352,
+        192
+      ],
+      "id": "f2ffa273-8957-44a3-9274-1de8793bf60f",
+      "name": "Code in JavaScript18"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        224,
+        160
+      ],
+      "id": "11520f8c-c38f-4708-a4ce-6ca21b6c40d1",
+      "name": "Merge"
     },
     {
       "parameters": {
@@ -468,930 +1571,11 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        416,
-        160
+        32,
+        144
       ],
-      "id": "e6f0aee5-38df-4fce-935f-84a3da595797",
+      "id": "1def9960-91fb-4629-baad-d986cd489d07",
       "name": "Code in JavaScript5"
-    },
-    {
-      "parameters": {
-        "rules": {
-          "values": [
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.isRestaurantAvailable }}",
-                    "rightValue": 0,
-                    "operator": {
-                      "type": "number",
-                      "operation": "equals"
-                    },
-                    "id": "465ba742-63de-4a1a-a713-ee051345bdf6"
-                  }
-                ],
-                "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "id": "8ba9e57a-7ce4-4abb-81ca-2e278915ef74",
-                    "leftValue": "={{ $json.isRestaurantAvailable }}",
-                    "rightValue": 1,
-                    "operator": {
-                      "type": "number",
-                      "operation": "equals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              }
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3.4,
-      "position": [
-        1200,
-        368
-      ],
-      "id": "156cfdc6-bde2-4248-bc49-f572ff86a1f2",
-      "name": "Switch2"
-    },
-    {
-      "parameters": {
-        "jsCode": "return [{\n  json: {\n    message: \"No restaurant found\"\n  }\n}]"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        1472,
-        176
-      ],
-      "id": "b040eae4-9685-4cfd-96aa-1973fadda28f",
-      "name": "Code in JavaScript6"
-    },
-    {
-      "parameters": {
-        "mode": "combine",
-        "combineBy": "combineByPosition",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3.2,
-      "position": [
-        992,
-        368
-      ],
-      "id": "816e8941-ef32-40f8-86c8-8dff9cfa95f9",
-      "name": "Merge3"
-    },
-    {
-      "parameters": {
-        "rules": {
-          "values": [
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.status }}",
-                    "rightValue": 1,
-                    "operator": {
-                      "type": "number",
-                      "operation": "equals"
-                    },
-                    "id": "75afc74b-76b7-4400-8c85-136d7b96e0bd"
-                  }
-                ],
-                "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "id": "f5000b9f-7ae9-4561-9014-ecef9ff68499",
-                    "leftValue": "={{ $json.status }}",
-                    "rightValue": 1,
-                    "operator": {
-                      "type": "number",
-                      "operation": "notEquals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              }
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3.4,
-      "position": [
-        1824,
-        448
-      ],
-      "id": "06dc7ddb-1d39-40a0-a663-7f424e003eb6",
-      "name": "Switch3"
-    },
-    {
-      "parameters": {
-        "jsCode": "return {\n  json: {\n    message: $input.first().json.message\n  }\n}"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        2144,
-        624
-      ],
-      "id": "78f6c1e6-2b08-4b98-8c66-80b572394dbd",
-      "name": "Code in JavaScript7"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://mrpdev.eatanceapp.com/v6/api/getRestaurantDetail",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Authorization",
-              "value": "={{ $json.userData[0].json.authorizationToken }}"
-            }
-          ]
-        },
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "language_slug",
-              "value": "={{ $json.userData[0].json.languageSlug }}"
-            },
-            {
-              "name": "restaurant_id",
-              "value": "={{ $json.restaurantId }}"
-            },
-            {
-              "name": "content_id",
-              "value": "={{ $json.restaurantId }}"
-            },
-            {
-              "name": "food",
-              "value": "=\"\""
-            },
-            {
-              "name": "price",
-              "value": "\"\""
-            },
-            {
-              "name": "availability",
-              "value": "0"
-            },
-            {
-              "name": "user_id",
-              "value": "={{ $json.userData[0].json.userId }}"
-            },
-            {
-              "name": "isEvent",
-              "value": "0"
-            },
-            {
-              "name": "send_categories",
-              "value": "0"
-            },
-            {
-              "name": "user_timezone",
-              "value": "={{ $json.userData[0].json.userTimezone }}"
-            },
-            {
-              "name": "platform",
-              "value": "={{ $json.userData[0].json.platform }}"
-            },
-            {
-              "name": "app_token",
-              "value": "={{ $json.userData[0].json.appToken }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        1456,
-        384
-      ],
-      "id": "0c39415c-ecce-4ccb-9a5f-8d57524b8b92",
-      "name": "getRestaurantDetail api"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://mrpdev.eatanceapp.com/v6/api/getRestaurantCategories",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Authorization",
-              "value": "={{ $json.userData.authorizationToken }}"
-            }
-          ]
-        },
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "language_slug",
-              "value": "={{ $json.userData.languageSlug }}"
-            },
-            {
-              "name": "restaurant_id",
-              "value": "={{ $json.restaurant[0].restuarant_id }}"
-            },
-            {
-              "name": "app_token",
-              "value": "={{ $json.userData.appToken }}"
-            },
-            {
-              "name": "availability",
-              "value": "=0"
-            },
-            {
-              "name": "content_id",
-              "value": "={{ $json.restaurant[0].restuarant_id }}"
-            },
-            {
-              "name": "food",
-              "value": "\"\""
-            },
-            {
-              "name": "isEvent",
-              "value": "0"
-            },
-            {
-              "name": "platform",
-              "value": "={{ $json.userData.platform }}"
-            },
-            {
-              "name": "price",
-              "value": "\"\""
-            },
-            {
-              "name": "user_timezone",
-              "value": "={{ $json.userData.userTimezone }}"
-            },
-            {
-              "name": "category_id",
-              "value": "\"\""
-            },
-            {
-              "name": "count",
-              "value": "10"
-            },
-            {
-              "name": "page_no",
-              "value": "1"
-            },
-            {
-              "name": "send_foodtypes",
-              "value": "1"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        2336,
-        96
-      ],
-      "id": "460601c9-e261-4a05-b9b5-4ab1df369afd",
-      "name": "getRestaurantCategories api"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://mrpdev.eatanceapp.com/v6/api/searchRestaurantMenu",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Authorization",
-              "value": "={{ $json.userData.authorizationToken }}"
-            }
-          ]
-        },
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "app_token",
-              "value": "={{ $json.userData.appToken }}"
-            },
-            {
-              "name": "assigned_food_types",
-              "value": "={{ $json.assigned_food_types }}"
-            },
-            {
-              "name": "availability",
-              "value": "={{0}}"
-            },
-            {
-              "name": "content_id",
-              "value": "={{ $json.contentId }}"
-            },
-            {
-              "name": "count",
-              "value": "={{10}}"
-            },
-            {
-              "name": "food",
-              "value": "={{ \"\" }}"
-            },
-            {
-              "name": "item_type",
-              "value": "={{\"1\"}}"
-            },
-            {
-              "name": "language_slug",
-              "value": "={{ $json.userData.languageSlug }}"
-            },
-            {
-              "name": "menu_search",
-              "value": "={{ $json.userData.userInputItem }}"
-            },
-            {
-              "name": "page_no",
-              "value": "={{1}}"
-            },
-            {
-              "name": "platform",
-              "value": "={{ $json.userData.platform }}"
-            },
-            {
-              "name": "price",
-              "value": "={{\"\"}}"
-            },
-            {
-              "name": "restaurant_id",
-              "value": "={{ $json.restaurantId }}"
-            },
-            {
-              "name": "shouldShowKeyboard",
-              "value": "={{true}}"
-            },
-            {
-              "name": "user_timezone",
-              "value": "={{ $json.userData.userTimezone }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        3344,
-        -112
-      ],
-      "id": "6b07b540-b9dc-4a1f-af4e-91f84a44a266",
-      "name": "searchRestaurantMenu api"
-    },
-    {
-      "parameters": {
-        "rules": {
-          "values": [
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.status }}",
-                    "rightValue": 1,
-                    "operator": {
-                      "type": "number",
-                      "operation": "equals"
-                    },
-                    "id": "75afc74b-76b7-4400-8c85-136d7b96e0bd"
-                  }
-                ],
-                "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "id": "f5000b9f-7ae9-4561-9014-ecef9ff68499",
-                    "leftValue": "={{ $json.status }}",
-                    "rightValue": 1,
-                    "operator": {
-                      "type": "number",
-                      "operation": "notEquals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              }
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3.4,
-      "position": [
-        2992,
-        128
-      ],
-      "id": "22a81fa1-f789-48cd-9fed-18f0cc31f0ba",
-      "name": "Switch4"
-    },
-    {
-      "parameters": {
-        "jsCode": "return {\n  json: {\n    message: $input.first().json.message\n  }\n}"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        3344,
-        272
-      ],
-      "id": "ebe437d7-1d4f-475e-a0db-8e0ccef7b1ff",
-      "name": "Code in JavaScript8"
-    },
-    {
-      "parameters": {
-        "rules": {
-          "values": [
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.restaurant[0].timings.closing.toLowerCase() }}",
-                    "rightValue": "open",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals"
-                    },
-                    "id": "a0e10247-d94c-4482-9413-b5adf41764bd"
-                  }
-                ],
-                "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "id": "16ddb3e9-6dc2-4fae-8745-7237a87ce0ad",
-                    "leftValue": "={{ $json.restaurant[0].timings.closing.toLowerCase() }}",
-                    "rightValue": "open",
-                    "operator": {
-                      "type": "string",
-                      "operation": "notEquals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              }
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3.4,
-      "position": [
-        2000,
-        288
-      ],
-      "id": "b5313c79-d9a4-46b3-97a7-048e51e54cf9",
-      "name": "Switch5"
-    },
-    {
-      "parameters": {
-        "jsCode": "return {\n  json: {\n    message: $input.first().json.message\n  }\n}"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        2240,
-        400
-      ],
-      "id": "b4c36329-720a-46ac-9039-755513784dce",
-      "name": "Code in JavaScript9"
-    },
-    {
-      "parameters": {
-        "jsCode": "return {\n  json: {\n     userData: $input.first().json.userData[0].json\n  }\n}"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        1376,
-        576
-      ],
-      "id": "4ff71c39-c0dc-4709-a12f-6c45cc2fd90c",
-      "name": "Code in JavaScript10"
-    },
-    {
-      "parameters": {
-        "mode": "combine",
-        "combineBy": "combineByPosition",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3.2,
-      "position": [
-        1648,
-        448
-      ],
-      "id": "654e3041-1ae5-49ca-9fff-de05b35d654d",
-      "name": "Merge6"
-    },
-    {
-      "parameters": {
-        "jsCode": "return {\n  json: {\n     userData: $input.first().json.userData,\n    restaurantId: $input.first().json.restaurant[0].restuarant_id,\n    contentId: $input.first().json.restaurant[0].content_id\n  }\n}"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        2432,
-        272
-      ],
-      "id": "ee795993-d5c1-4fd3-abd8-fd639bd762cb",
-      "name": "Code in JavaScript11"
-    },
-    {
-      "parameters": {
-        "jsCode": "return {\n  json: {\n     userData: $input.first().json.userData,\n    restaurantId: $input.first().json.restaurantId,\n    contentId: $input.first().json.contentId\n  }\n}"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        3344,
-        112
-      ],
-      "id": "cb14de50-58f0-436d-9094-754055544acd",
-      "name": "Code in JavaScript12"
-    },
-    {
-      "parameters": {
-        "mode": "combine",
-        "combineBy": "combineByPosition",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3.2,
-      "position": [
-        3648,
-        0
-      ],
-      "id": "b7e8f6dd-d5f3-4619-897c-a2b054d37a44",
-      "name": "Merge7"
-    },
-    {
-      "parameters": {
-        "rules": {
-          "values": [
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.status }}",
-                    "rightValue": 1,
-                    "operator": {
-                      "type": "number",
-                      "operation": "equals"
-                    },
-                    "id": "75afc74b-76b7-4400-8c85-136d7b96e0bd"
-                  }
-                ],
-                "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "id": "f5000b9f-7ae9-4561-9014-ecef9ff68499",
-                    "leftValue": "={{ $json.status }}",
-                    "rightValue": 1,
-                    "operator": {
-                      "type": "number",
-                      "operation": "notEquals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              }
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3.4,
-      "position": [
-        3856,
-        0
-      ],
-      "id": "2470c067-21f7-4efb-9674-eb177409cfc2",
-      "name": "Switch6"
-    },
-    {
-      "parameters": {
-        "jsCode": "return {\n  json: {\n    message: $input.first().json.message\n  }\n}"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        4048,
-        96
-      ],
-      "id": "6fd342e1-8961-4991-b304-f8e18aff2134",
-      "name": "Code in JavaScript13"
-    },
-    {
-      "parameters": {
-        "mode": "combine",
-        "combineBy": "combineByPosition",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3.2,
-      "position": [
-        2688,
-        128
-      ],
-      "id": "72149ea4-12df-4294-8e5f-a2b329a86afc",
-      "name": "Merge5"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://mrpdev.eatanceapp.com/v6/api/addtoCart",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Authorization",
-              "value": "={{ $json.userData.authorizationToken }}"
-            }
-          ]
-        },
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "app_token",
-              "value": "={{ $json.userData.appToken }}"
-            },
-            {
-              "name": "cart_id",
-              "value": "={{0}}"
-            },
-            {
-              "name": "coupon_array",
-              "value": "={{[]}}"
-            },
-            {
-              "name": "driver_tip",
-              "value": "={{ \"\" }}"
-            },
-            {
-              "name": "=earning_points",
-              "value": "={{ \"\" }}"
-            },
-            {
-              "name": "is_creditcard",
-              "value": "={{\"no\"}}"
-            },
-            {
-              "name": "isLoggedIn",
-              "value": "={{ 1 }}"
-            },
-            {
-              "name": "is_wallet_applied",
-              "value": "={{ 0 }}"
-            },
-            {
-              "name": "items"
-            },
-            {
-              "name": "language_slug",
-              "value": "={{ $json.userData.languageSlug }}"
-            },
-            {
-              "name": "latitude",
-              "value": "={{ $json.userData.latitude }}"
-            },
-            {
-              "name": "longitude",
-              "value": "={{ $json.userData.longitude }}"
-            },
-            {
-              "name": "order_delivery",
-              "value": "={{ \"Pickup\" }}"
-            },
-            {
-              "name": "platform",
-              "value": "={{ $json.userData.platform }}"
-            },
-            {
-              "name": "restaurant_id",
-              "value": "={{ $json.restaurantId }}"
-            },
-            {
-              "name": "scheduled_date",
-              "value": "={{ \"\" }}"
-            },
-            {
-              "name": "slot_close_time",
-              "value": "={{ \"\" }}"
-            },
-            {
-              "name": "slot_open_time",
-              "value": "={{ \"\" }}"
-            },
-            {
-              "name": "tip_percent_val",
-              "value": "={{ \"\" }}"
-            },
-            {
-              "name": "user_id",
-              "value": "={{ $json.userData.userId }}"
-            },
-            {
-              "name": "user_timezone",
-              "value": "={{ $json.userData.userTimezone }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        4048,
-        -112
-      ],
-      "id": "b14d29bf-6755-4912-8479-06e0f3a85c05",
-      "name": "addtoCart  api"
-    },
-    {
-      "parameters": {
-        "rules": {
-          "values": [
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.status }}",
-                    "rightValue": 1,
-                    "operator": {
-                      "type": "number",
-                      "operation": "equals"
-                    },
-                    "id": "75afc74b-76b7-4400-8c85-136d7b96e0bd"
-                  }
-                ],
-                "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "id": "f5000b9f-7ae9-4561-9014-ecef9ff68499",
-                    "leftValue": "={{ $json.status }}",
-                    "rightValue": 1,
-                    "operator": {
-                      "type": "number",
-                      "operation": "notEquals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              }
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3.4,
-      "position": [
-        4288,
-        -112
-      ],
-      "id": "5d02b3bd-dffc-4730-8bac-f7ce20593649",
-      "name": "Switch7"
-    },
-    {
-      "parameters": {
-        "jsCode": "return {\n  json: {\n    message: $input.first().json.message\n  }\n}"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        4528,
-        0
-      ],
-      "id": "e2c534ab-b7c3-401f-87db-eb6961e0e8da",
-      "name": "Code in JavaScript14"
-    },
-    {
-      "parameters": {
-        "jsCode": "return {\n  json: {\n    message: $input.first().json.message\n  }\n}"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        4528,
-        -208
-      ],
-      "id": "a1482441-d62d-4366-ba29-3dba1a434d39",
-      "name": "Code in JavaScript15"
     }
   ],
   "connections": {
@@ -1399,7 +1583,7 @@
       "main": [
         [
           {
-            "node": "Code in JavaScript4",
+            "node": "output from AI",
             "type": "main",
             "index": 0
           }
@@ -1428,66 +1612,16 @@
         ]
       ]
     },
-    "Switch": {
+    "no item name": {
       "main": [
-        [
-          {
-            "node": "no item name",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "no restaurant name",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "returning user input",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Get restaurant api",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Code in JavaScript2",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Code in JavaScript1",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "handle api": {
       "main": [
         [
           {
-            "node": "Merge3",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Merge": {
-      "main": [
-        [
-          {
-            "node": "handle api",
+            "node": "Switch2",
             "type": "main",
             "index": 0
           }
@@ -1523,11 +1657,6 @@
             "node": "Merge",
             "type": "main",
             "index": 1
-          },
-          {
-            "node": "Merge3",
-            "type": "main",
-            "index": 1
           }
         ]
       ]
@@ -1536,67 +1665,12 @@
       "main": [
         [
           {
-            "node": "Code in JavaScript",
+            "node": "input for AI model",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Code in JavaScript3",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Code in JavaScript": {
-      "main": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Code in JavaScript3": {
-      "main": [
-        [
-          {
-            "node": "Merge4",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Merge4": {
-      "main": [
-        [
-          {
-            "node": "Switch",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Code in JavaScript4": {
-      "main": [
-        [
-          {
-            "node": "Merge4",
-            "type": "main",
-            "index": 1
-          }
-        ]
-      ]
-    },
-    "Code in JavaScript5": {
-      "main": [
-        [
-          {
-            "node": "Merge",
+            "node": "data from user",
             "type": "main",
             "index": 0
           }
@@ -1620,17 +1694,6 @@
           },
           {
             "node": "Code in JavaScript10",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Merge3": {
-      "main": [
-        [
-          {
-            "node": "Switch2",
             "type": "main",
             "index": 0
           }
@@ -1778,22 +1841,11 @@
         ]
       ]
     },
-    "Merge7": {
-      "main": [
-        [
-          {
-            "node": "Switch6",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Switch6": {
       "main": [
         [
           {
-            "node": "addtoCart  api",
+            "node": "Switch1",
             "type": "main",
             "index": 0
           }
@@ -1841,6 +1893,187 @@
         [
           {
             "node": "Code in JavaScript14",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript15": {
+      "main": [
+        []
+      ]
+    },
+    "Code in JavaScript16": {
+      "main": [
+        [
+          {
+            "node": "addtoCart  api",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "data from user": {
+      "main": [
+        [
+          {
+            "node": "Merge AI output and user input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "input for AI model": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "output from AI": {
+      "main": [
+        [
+          {
+            "node": "Merge AI output and user input",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge AI output and user input": {
+      "main": [
+        [
+          {
+            "node": "Conditions on the basis of amount of information we have",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conditions on the basis of amount of information we have": {
+      "main": [
+        [
+          {
+            "node": "no item name",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "no restaurant name",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "returning user input",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get restaurant api",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "User not sure",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Irrelevant message from user",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "handle api",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "get restaurant api fail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript17",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in JavaScript18",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in JavaScript16",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Merge7": {
+      "main": [
+        [
+          {
+            "node": "Switch6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript5": {
+      "main": [
+        [
+          {
+            "node": "Merge",
             "type": "main",
             "index": 0
           }
