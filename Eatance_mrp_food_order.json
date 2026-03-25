@@ -4,7 +4,7 @@
       "parameters": {
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "You are a voice assistant for a food ordering app.\n\nYour job is to extract the following fields from the user's message:\n\n- \"item\": the main food item (e.g., pizza, burger)\n- \"restaurant\": name of the restaurant if mentioned\n- \"add_ons\": any toppings or modifiers the user mentions (e.g., double cheese, spicy, large size)\n- \"status\": \n   - 0: if only restaurant is mentioned\n   - 1: if only item is mentioned\n   - 2: if both are mentioned\n   - 3: if the user is not sure regarding anything related to restaurant \n   - 4: if anything other than food ordering has been asked\n\nAlso generate a \"message\" field — a sentence the assistant will speak to the user — but do not include add-ons in the message. Only confirm the item and restaurant. If any field is missing, your message should politely ask for the missing information.\n\nDon't ask for item if only restaurant name is mentioned\n\nIf the user is not familiar with the restaurants, ask them if they want suggestions.\n\nIMPORTANT:\n- Respond with only valid JSON.\n- Do not include markdown, bullet points, or explanation.\n- Do not wrap the JSON in triple backticks.\n- Do not speak outside the JSON.\n\nHere’s an example of the correct response format:\n\n{\n  \"item\": \"pizza\",\n  \"restaurant\": \"Dominos\",\n  \"add_ons\": [\"double cheese\"],\n  \"message\": \"👍\",\n  \"status\": 3\n}\n"
+          "systemMessage": "You are a voice assistant for a food ordering app.\n\nYour job is to extract the following fields by considering the FULL conversation history, not just the latest message. If a field was mentioned in a previous message, carry it forward:\n\n\"item\": the main food item (e.g., pizza, burger)\n\"restaurant\": name of the restaurant if mentioned\n\"add_ons\": any toppings or modifiers the user mentions (e.g., double cheese, spicy, large size)\n🛠 Speech-to-Text Correction Rule\n\nThe user input is generated using speech-to-text and may contain incorrect or misheard words.\n\nYou MUST intelligently correct misspelled or misheard words before extracting information.\nUse context to fix:\nFood items (e.g., \"pija\" → pizza, \"burget\" → burger)\nRestaurant names (e.g., \"Dominoes\" → Dominos, \"Mek donald\" → McDonald's)\nAdd-ons (e.g., \"extra chiss\" → extra cheese)\nIf a word is unclear, infer the most likely valid food or restaurant.\nOnly extract values AFTER correcting the input.\n\nStatus Rules\n0: if only restaurant is mentioned\n1: if only item is mentioned\n2: if both are mentioned\n3: if the user is not sure regarding anything related to restaurant\n4: if anything other than food ordering has been asked\nMessage Rules\n\nGenerate a \"message\" field — a sentence the assistant will speak to the user.\n\nDo NOT include add-ons in the message\nOnly confirm the item and restaurant\nIf any field is missing, politely ask for the missing information\nDon't ask for item if only restaurant name is mentioned\nIf the user is not familiar with restaurants, ask if they want suggestions\nIf item and restaurant are already known from previous messages, do NOT ask again\nIMPORTANT\nRespond with only valid JSON\nDo not include markdown, bullet points, or explanation\nDo not wrap the JSON in triple backticks\nDo not speak outside the JSON\nResponse Format\n\n{\n\"item\": \"pizza\",\n\"restaurant\": \"Dominos\",\n\"add_ons\": [\"double cheese\"],\n\"message\": \"👍\",\n\"status\": 3\n}"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -57,7 +57,7 @@
     },
     {
       "parameters": {
-        "jsCode": "return { message: \"Please enter the name of the restaurant.\" };\n"
+        "jsCode": "return { \n  lastExecutedNode: \"no restaurant name\",\n  message: \"Please enter the name of the restaurant.\" \n};\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -70,7 +70,7 @@
     },
     {
       "parameters": {
-        "jsCode": "return { message: \"Please enter the name of the Item you want to order.\" };\n"
+        "jsCode": "return {\n  lastExecutedNode: \"no Item name\",\n  message: \"Please enter the name of the Item you want to order.\"\n};\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -88,7 +88,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        656,
+        720,
         144
       ],
       "id": "11c7a38d-8971-4930-8ef6-36871eac379b",
@@ -255,80 +255,6 @@
                 },
                 "conditions": [
                   {
-                    "leftValue": "={{ $json.isRestaurantAvailable }}",
-                    "rightValue": 0,
-                    "operator": {
-                      "type": "number",
-                      "operation": "equals"
-                    },
-                    "id": "465ba742-63de-4a1a-a713-ee051345bdf6"
-                  }
-                ],
-                "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "id": "8ba9e57a-7ce4-4abb-81ca-2e278915ef74",
-                    "leftValue": "={{ $json.isRestaurantAvailable }}",
-                    "rightValue": 1,
-                    "operator": {
-                      "type": "number",
-                      "operation": "equals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              }
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3.4,
-      "position": [
-        1056,
-        144
-      ],
-      "id": "156cfdc6-bde2-4248-bc49-f572ff86a1f2",
-      "name": "Switch2"
-    },
-    {
-      "parameters": {
-        "jsCode": "return [{\n  json: {\n    message: \"No restaurant found\"\n  }\n}]"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        1360,
-        -48
-      ],
-      "id": "b040eae4-9685-4cfd-96aa-1973fadda28f",
-      "name": "Code in JavaScript6"
-    },
-    {
-      "parameters": {
-        "rules": {
-          "values": [
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
                     "leftValue": "={{ $json.status }}",
                     "rightValue": 1,
                     "operator": {
@@ -378,19 +304,6 @@
     },
     {
       "parameters": {
-        "jsCode": "return {\n  json: {\n    message: $input.first().json.message\n  }\n}"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        2064,
-        608
-      ],
-      "id": "78f6c1e6-2b08-4b98-8c66-80b572394dbd",
-      "name": "Code in JavaScript7"
-    },
-    {
-      "parameters": {
         "method": "POST",
         "url": "https://mrpdev.eatanceapp.com/v6/api/getRestaurantDetail",
         "sendHeaders": true,
@@ -398,7 +311,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "={{ $json.userData[0].json.authorizationToken }}"
+              "value": "={{ $json.userData.authorizationToken }}"
             }
           ]
         },
@@ -407,7 +320,7 @@
           "parameters": [
             {
               "name": "language_slug",
-              "value": "={{ $json.userData[0].json.languageSlug }}"
+              "value": "={{ $json.userData.languageSlug }}"
             },
             {
               "name": "restaurant_id",
@@ -431,7 +344,7 @@
             },
             {
               "name": "user_id",
-              "value": "={{ $json.userData[0].json.userId }}"
+              "value": "={{ $json.userData.userId }}"
             },
             {
               "name": "isEvent",
@@ -443,15 +356,15 @@
             },
             {
               "name": "user_timezone",
-              "value": "={{ $json.userData[0].json.userTimezone }}"
+              "value": "={{ $json.userData.userTimezone }}"
             },
             {
               "name": "platform",
-              "value": "={{ $json.userData[0].json.platform }}"
+              "value": "={{ $json.userData.platform }}"
             },
             {
               "name": "app_token",
-              "value": "={{ $json.userData[0].json.appToken }}"
+              "value": "={{ $json.userData.appToken }}"
             }
           ]
         },
@@ -703,19 +616,6 @@
     },
     {
       "parameters": {
-        "jsCode": "return {\n  json: {\n    message: $input.first().json.message\n  }\n}"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        3168,
-        416
-      ],
-      "id": "ebe437d7-1d4f-475e-a0db-8e0ccef7b1ff",
-      "name": "Code in JavaScript8"
-    },
-    {
-      "parameters": {
         "rules": {
           "values": [
             {
@@ -777,20 +677,7 @@
     },
     {
       "parameters": {
-        "jsCode": "return {\n  json: {\n    message: $input.first().json.message\n  }\n}"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        2304,
-        464
-      ],
-      "id": "b4c36329-720a-46ac-9039-755513784dce",
-      "name": "Code in JavaScript9"
-    },
-    {
-      "parameters": {
-        "jsCode": "return {\n  json: {\n     userData: $input.first().json.userData[0].json\n  }\n}"
+        "jsCode": "return {\n  json: {\n     userData: $input.first().json.userData\n  }\n}"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -800,21 +687,6 @@
       ],
       "id": "4ff71c39-c0dc-4709-a12f-6c45cc2fd90c",
       "name": "Code in JavaScript10"
-    },
-    {
-      "parameters": {
-        "mode": "combine",
-        "combineBy": "combineByPosition",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3.2,
-      "position": [
-        1648,
-        288
-      ],
-      "id": "654e3041-1ae5-49ca-9fff-de05b35d654d",
-      "name": "Merge6"
     },
     {
       "parameters": {
@@ -1327,7 +1199,7 @@
     },
     {
       "parameters": {
-        "jsCode": "return [\n  {\n    json: {\n      message: $input.first().json.userMessage}\n  }\n]"
+        "jsCode": "return {\n  lastExecutedNode: \"User not sure\",\n  message: $input.first().json.userMessage}\n}"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -1340,7 +1212,7 @@
     },
     {
       "parameters": {
-        "jsCode": "return [\n  {\n    json: {\n      message: $input.first().json.userMessage}\n  }\n]"
+        "jsCode": "return {\n  status: 200,\n  lastExecutedNode: \"Irrelevant message from user\",\n  message: $input.first().json.userMessage\n  }"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -1353,68 +1225,7 @@
     },
     {
       "parameters": {
-        "rules": {
-          "values": [
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.allRestaurantsData.status }}",
-                    "rightValue": 1,
-                    "operator": {
-                      "type": "number",
-                      "operation": "equals"
-                    },
-                    "id": "75afc74b-76b7-4400-8c85-136d7b96e0bd"
-                  }
-                ],
-                "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "id": "f5000b9f-7ae9-4561-9014-ecef9ff68499",
-                    "leftValue": "={{ $json.allRestaurantsData.status }}",
-                    "rightValue": 1,
-                    "operator": {
-                      "type": "number",
-                      "operation": "notEquals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              }
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3.4,
-      "position": [
-        448,
-        160
-      ],
-      "id": "a7809e52-a269-41b9-98a3-8d3629828f7f",
-      "name": "Switch"
-    },
-    {
-      "parameters": {
-        "jsCode": "return {\n  json: {\n    message: $input.first().json.message\n  }\n}"
+        "jsCode": "return {\n  lastExecutedNode: \"get restaurant api fail\",\n  message: $input.first().json.message\n  }"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -1525,19 +1336,6 @@
     },
     {
       "parameters": {
-        "jsCode": "return {\n  json: {\n    message: \"No item found\"\n  }\n}"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        4336,
-        -80
-      ],
-      "id": "cf0783c2-0bec-4c04-8873-373fbe9c0e13",
-      "name": "Code in JavaScript17"
-    },
-    {
-      "parameters": {
         "jsCode": "const input = $input.first().json;\nconst menuItems = input.menu_item;\n\nconst itemNames = menuItems.map(item => item.name).join(', ');\n\nreturn {\n  json: {\n    message: \"There are multiple options available. Which one would you like to have: \"+itemNames\n  }\n};\n"
       },
       "type": "n8n-nodes-base.code",
@@ -1548,6 +1346,84 @@
       ],
       "id": "f2ffa273-8957-44a3-9274-1de8793bf60f",
       "name": "Code in JavaScript18"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  lastExecutedNode: \"Restaurant not found\",\n  message: \"No restaurant found\"\n  }"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1360,
+        -48
+      ],
+      "id": "b040eae4-9685-4cfd-96aa-1973fadda28f",
+      "name": "Restaurant not found"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  lastExecutedNode: \"Get restaurant Detil api\",\n  message: $input.first().json.message\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2064,
+        608
+      ],
+      "id": "78f6c1e6-2b08-4b98-8c66-80b572394dbd",
+      "name": "GetRestaurant Detail api fail"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  lastExecutedNode: \"restaurant closed\",\n  message: $input.first().json.message\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2304,
+        464
+      ],
+      "id": "b4c36329-720a-46ac-9039-755513784dce",
+      "name": "Restaurant closed"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  lastExecutedNode: \"Get Restaurant Categories fail\",\n  message: $input.first().json.message\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3168,
+        416
+      ],
+      "id": "ebe437d7-1d4f-475e-a0db-8e0ccef7b1ff",
+      "name": "Get Restaurant Categories fail"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  lastExecutedNode: \"menu empty\",\n   message: \"No item found\"\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4336,
+        -80
+      ],
+      "id": "cf0783c2-0bec-4c04-8873-373fbe9c0e13",
+      "name": "menu empty"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json : {\n      allRestaurantsData: $input.first().json\n    }\n  }\n]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        32,
+        144
+      ],
+      "id": "1def9960-91fb-4629-baad-d986cd489d07",
+      "name": "Formatting get restaurant api response"
     },
     {
       "parameters": {
@@ -1562,20 +1438,144 @@
         160
       ],
       "id": "11520f8c-c38f-4708-a4ce-6ca21b6c40d1",
-      "name": "Merge"
+      "name": "Get Restaurant api response merge"
     },
     {
       "parameters": {
-        "jsCode": "return [\n  {\n    json : {\n      allRestaurantsData: $input.first().json\n    }\n  }\n]"
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.allRestaurantsData.status }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "75afc74b-76b7-4400-8c85-136d7b96e0bd"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "f5000b9f-7ae9-4561-9014-ecef9ff68499",
+                    "leftValue": "={{ $json.allRestaurantsData.status }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "notEquals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
       },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
       "position": [
-        32,
+        448,
+        160
+      ],
+      "id": "a7809e52-a269-41b9-98a3-8d3629828f7f",
+      "name": "Get Restaurant api status code condition"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.isRestaurantAvailable }}",
+                    "rightValue": 0,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "465ba742-63de-4a1a-a713-ee051345bdf6"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "8ba9e57a-7ce4-4abb-81ca-2e278915ef74",
+                    "leftValue": "={{ $json.isRestaurantAvailable }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        960,
         144
       ],
-      "id": "1def9960-91fb-4629-baad-d986cd489d07",
-      "name": "Code in JavaScript5"
+      "id": "156cfdc6-bde2-4248-bc49-f572ff86a1f2",
+      "name": "Restaurant availability condition"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1648,
+        288
+      ],
+      "id": "654e3041-1ae5-49ca-9fff-de05b35d654d",
+      "name": "Get Restaurant detail api response merge"
     }
   ],
   "connections": {
@@ -1621,7 +1621,7 @@
       "main": [
         [
           {
-            "node": "Switch2",
+            "node": "Restaurant availability condition",
             "type": "main",
             "index": 0
           }
@@ -1632,7 +1632,7 @@
       "main": [
         [
           {
-            "node": "Code in JavaScript5",
+            "node": "Formatting get restaurant api response",
             "type": "main",
             "index": 0
           }
@@ -1654,7 +1654,7 @@
       "main": [
         [
           {
-            "node": "Merge",
+            "node": "Get Restaurant api response merge",
             "type": "main",
             "index": 1
           }
@@ -1677,29 +1677,6 @@
         ]
       ]
     },
-    "Switch2": {
-      "main": [
-        [
-          {
-            "node": "Code in JavaScript6",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "getRestaurantDetail api",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Code in JavaScript10",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Switch3": {
       "main": [
         [
@@ -1711,7 +1688,7 @@
         ],
         [
           {
-            "node": "Code in JavaScript7",
+            "node": "GetRestaurant Detail api fail",
             "type": "main",
             "index": 0
           }
@@ -1722,7 +1699,7 @@
       "main": [
         [
           {
-            "node": "Merge6",
+            "node": "Get Restaurant detail api response merge",
             "type": "main",
             "index": 0
           }
@@ -1767,7 +1744,7 @@
         ],
         [
           {
-            "node": "Code in JavaScript8",
+            "node": "Get Restaurant Categories fail",
             "type": "main",
             "index": 0
           }
@@ -1790,7 +1767,7 @@
         ],
         [
           {
-            "node": "Code in JavaScript9",
+            "node": "Restaurant closed",
             "type": "main",
             "index": 0
           }
@@ -1801,20 +1778,9 @@
       "main": [
         [
           {
-            "node": "Merge6",
+            "node": "Get Restaurant detail api response merge",
             "type": "main",
             "index": 1
-          }
-        ]
-      ]
-    },
-    "Merge6": {
-      "main": [
-        [
-          {
-            "node": "Switch3",
-            "type": "main",
-            "index": 0
           }
         ]
       ]
@@ -2003,29 +1969,11 @@
         ]
       ]
     },
-    "Switch": {
-      "main": [
-        [
-          {
-            "node": "handle api",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "get restaurant api fail",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Switch1": {
       "main": [
         [
           {
-            "node": "Code in JavaScript17",
+            "node": "menu empty",
             "type": "main",
             "index": 0
           }
@@ -2058,22 +2006,74 @@
         ]
       ]
     },
-    "Merge": {
+    "Formatting get restaurant api response": {
       "main": [
         [
           {
-            "node": "Switch",
+            "node": "Get Restaurant api response merge",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Code in JavaScript5": {
+    "Get Restaurant api response merge": {
       "main": [
         [
           {
-            "node": "Merge",
+            "node": "Get Restaurant api status code condition",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Restaurant api status code condition": {
+      "main": [
+        [
+          {
+            "node": "handle api",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "get restaurant api fail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restaurant availability condition": {
+      "main": [
+        [
+          {
+            "node": "Restaurant not found",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "getRestaurantDetail api",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code in JavaScript10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Restaurant detail api response merge": {
+      "main": [
+        [
+          {
+            "node": "Switch3",
             "type": "main",
             "index": 0
           }
