@@ -30,7 +30,7 @@
       "typeVersion": 1.2,
       "position": [
         5728,
-        3392
+        3376
       ],
       "id": "753d612a-d50a-46f7-8bf8-a3bd1ccb4309",
       "name": "OpenAI Chat Model",
@@ -50,7 +50,7 @@
       "typeVersion": 1.3,
       "position": [
         6080,
-        3360
+        3376
       ],
       "id": "335de6d5-fe22-46e1-8008-7ab7aa23e464",
       "name": "Structured Output Parser"
@@ -200,7 +200,7 @@
       "parameters": {
         "sessionIdType": "customKey",
         "sessionKey": "={{ $('input for AI model').item.json.sessionId }}",
-        "contextWindowLength": 40000
+        "contextWindowLength": 8000
       },
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
@@ -218,7 +218,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        7152,
+        7120,
         3232
       ],
       "id": "ecba5b22-d258-4007-97e3-9433436969f7",
@@ -433,7 +433,7 @@
             },
             {
               "name": "content_id",
-              "value": "={{ $json.contentId }}"
+              "value": "={{ $json.restaurantData.contentId }}"
             },
             {
               "name": "count",
@@ -469,7 +469,7 @@
             },
             {
               "name": "restaurant_id",
-              "value": "={{ $json.restaurantId }}"
+              "value": "={{ $json.restaurantData.restaurantId }}"
             },
             {
               "name": "shouldShowKeyboard",
@@ -814,7 +814,7 @@
     },
     {
       "parameters": {
-        "jsCode": "return {\n  status: 200,\n  lastExecutedNode: \"Irrelevant message from user\",\n  message: $input.first().json.userMessage\n  }"
+        "jsCode": "return {\n  status: 1,\n  lastExecutedNode: \"Irrelevant message from user\",\n  message: $input.first().json.userMessage\n  }"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -871,8 +871,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        9520,
-        3312
+        9440,
+        3296
       ],
       "id": "f971e0b8-4e1a-40c4-b826-1727d0d5bd61",
       "name": "Restaurant closed"
@@ -915,7 +915,7 @@
       "typeVersion": 3.2,
       "position": [
         8864,
-        3136
+        3152
       ],
       "id": "9f30e639-2524-42f6-8dd7-f823d1efafd4",
       "name": "Get Restaurant detail api response merge"
@@ -934,11 +934,12 @@
                 },
                 "conditions": [
                   {
-                    "leftValue": "={{ $json.status }}",
+                    "leftValue": "={{ $json.status == 1 && $json.restaurant[0].timings.closing.toLowerCase() == 'open'}}",
                     "rightValue": 1,
                     "operator": {
-                      "type": "number",
-                      "operation": "equals"
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
                     },
                     "id": "75afc74b-76b7-4400-8c85-136d7b96e0bd"
                   }
@@ -957,11 +958,35 @@
                 "conditions": [
                   {
                     "id": "f5000b9f-7ae9-4561-9014-ecef9ff68499",
-                    "leftValue": "={{ $json.status }}",
+                    "leftValue": "={{ $json.status == 1 && $json.restaurant[0].timings.closing.toLowerCase() != 'open' }}",
                     "rightValue": 1,
                     "operator": {
-                      "type": "number",
-                      "operation": "notEquals"
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "720a528f-0446-4abe-958f-0c56c4d1fadc",
+                    "leftValue": "={{ $json.status != 1 }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
                     }
                   }
                 ],
@@ -1105,74 +1130,13 @@
     },
     {
       "parameters": {
-        "rules": {
-          "values": [
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.restaurant[0].timings.closing.toLowerCase() }}",
-                    "rightValue": "open",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals"
-                    },
-                    "id": "a0e10247-d94c-4482-9413-b5adf41764bd"
-                  }
-                ],
-                "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "id": "16ddb3e9-6dc2-4fae-8745-7237a87ce0ad",
-                    "leftValue": "={{ $json.restaurant[0].timings.closing.toLowerCase() }}",
-                    "rightValue": "open",
-                    "operator": {
-                      "type": "string",
-                      "operation": "notEquals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              }
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3.4,
-      "position": [
-        9264,
-        3120
-      ],
-      "id": "b6fa8098-6a15-4e5c-9e5a-53b86b7ed659",
-      "name": "Restaurant open/close condition"
-    },
-    {
-      "parameters": {
-        "jsCode": "return {\n  json: {\n     userData: $input.first().json.userData,\n    restaurantId: $input.first().json.restaurant[0].restuarant_id,\n    contentId: $input.first().json.restaurant[0].content_id\n  }\n}"
+        "jsCode": "return {\n  json: {\n    userData: $input.first().json.userData,\n    restaurantData: {\n      restaurantName: $input.first().json.restaurant[0].name,\n      availability: $input.first().json.userData.availability,\n      restaurantId: $input.first().json.restaurant[0].restuarant_id,\n      contentId: $input.first().json.restaurant[0].content_id\n    }\n  }\n}"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        9520,
-        3104
+        9488,
+        3120
       ],
       "id": "c50537ae-60c9-4ca9-aed6-0eb0e244dcff",
       "name": "sending userData,  restaurantId, contentId to next node"
@@ -1187,7 +1151,7 @@
       "typeVersion": 3.2,
       "position": [
         9808,
-        3088
+        3104
       ],
       "id": "84edeb0e-b661-4dc0-9b59-3f5222c0b66c",
       "name": "Get Restaurant categories response merge"
@@ -1248,20 +1212,20 @@
       "typeVersion": 3.4,
       "position": [
         10032,
-        3088
+        3104
       ],
       "id": "b6a11bac-9a41-41dd-98d0-56e80f7561ab",
       "name": "Get restaurant categories status check"
     },
     {
       "parameters": {
-        "jsCode": "return {\n  json: {\n     userData: $input.first().json.userData,\n    restaurantId: $input.first().json.restaurantId,\n    contentId: $input.first().json.contentId\n  }\n}"
+        "jsCode": "return {\n  json: {\n     userData: $input.first().json.userData,\n    restaurantData: $input.first().json.restaurantData,\n    restaurantId: $input.first().json.restaurantId,\n    contentId: $input.first().json.contentId\n  }\n}"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        10368,
-        3072
+        10352,
+        3088
       ],
       "id": "77723d34-d6d3-4c2e-b93b-88e380202e90",
       "name": "sending userData, restaurantId, contentId to next node"
@@ -1276,7 +1240,7 @@
       "typeVersion": 3.2,
       "position": [
         10704,
-        3056
+        3072
       ],
       "id": "0fb0f28b-d60c-4cc7-a936-cc4725291e5e",
       "name": "Search restaurant menu api merge"
@@ -1337,7 +1301,7 @@
       "typeVersion": 3.4,
       "position": [
         10960,
-        3056
+        3072
       ],
       "id": "2b0ba490-4f75-40d9-b458-51408d107a74",
       "name": "Search restaurant menu api status check"
@@ -1420,7 +1384,7 @@
       "typeVersion": 3.4,
       "position": [
         11248,
-        3024
+        3040
       ],
       "id": "acbe8816-75c1-4619-aa30-43d52549f051",
       "name": "Search restaurant menu items found conditions"
@@ -1432,8 +1396,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        10384,
-        3264
+        10336,
+        3296
       ],
       "id": "cc51f0f0-ee5d-4e62-9cdb-667ac491a231",
       "name": "Get Restaurant Categories api fail"
@@ -1445,8 +1409,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        11248,
-        3280
+        11264,
+        3328
       ],
       "id": "d2d7169b-5b43-495a-bb90-502137ab8367",
       "name": "Search Restaurant menu api fail"
@@ -1459,7 +1423,7 @@
       "typeVersion": 2,
       "position": [
         11568,
-        3040
+        3056
       ],
       "id": "2ef22a27-d58e-4f11-a98c-d5981a488ede",
       "name": "For multiple items in search restaurant menu api"
@@ -1504,7 +1468,7 @@
                 },
                 "conditions": [
                   {
-                    "leftValue": "={{ $json.status }}",
+                    "leftValue": "={{ $json.addToCartResponse.status }}",
                     "rightValue": 1,
                     "operator": {
                       "type": "number",
@@ -1527,7 +1491,7 @@
                 "conditions": [
                   {
                     "id": "f5000b9f-7ae9-4561-9014-ecef9ff68499",
-                    "leftValue": "={{ $json.status }}",
+                    "leftValue": "={{ $json.addToCartResponse.status }}",
                     "rightValue": 1,
                     "operator": {
                       "type": "number",
@@ -1545,20 +1509,20 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        12080,
-        3264
+        12576,
+        3280
       ],
       "id": "4631f2d0-2457-4b94-93e2-b5580132840c",
       "name": "Add to cart api status check"
     },
     {
       "parameters": {
-        "jsCode": "return {\n  json: {\n    cartId: $input.first().json.cart_id,\n    message: $input.first().json.message\n  }\n}"
+        "jsCode": "\nconst cartItem = {\n  price: $input.first().json.addToCartResponse.items[0].price,\n  quantity: $input.first().json.addToCartResponse.items[0].quantity,\n  inStock: $input.first().json.addToCartResponse.items[0].in_stock,\n  addonsCategoryList: ,\n  comment: $input.first().json.addToCartResponse.items[0].comment,\n  image: $input.first().json.addToCartResponse.items[0].image,\n  name: $input.first().json.addToCartResponse.items[0].name,\n  availability: ,\n  isRecipesMenu: \n}\n\nreturn {\n  json: {\n    cartId: $input.first().json.cart_id,\n    contentId: $input.first().json.table_id,\n    couponArray: $input.first().json.coupon_array,\n    couponName: $input.first().json.coupon_name,\n    items: ,\n    resId: $input.first().json.foundRestaurantItem.restaurantId,\n    resName: $input.first().json.foundRestaurantItem.restaurantName,\n    message: $input.first().json.message\n  }\n}"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        12384,
+        12960,
         3104
       ],
       "id": "8f360026-a34f-4be2-98d1-a87daacee699",
@@ -1571,11 +1535,52 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        12368,
+        12944,
         3488
       ],
       "id": "06206f2a-2cb7-44d0-a54c-75eb46cb1c77",
       "name": "Add to cart api error response"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        12320,
+        3280
+      ],
+      "id": "4f5c7a5f-0b43-4819-b458-e59c571ffa66",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  addToCartResponse: $input.first().json\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        12048,
+        3264
+      ],
+      "id": "b91b612b-3949-4551-8965-e6d56a5f74cf",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  foundRestaurantItem: $input.first().json\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        11632,
+        3520
+      ],
+      "id": "25080cc4-b649-42a8-a663-9ca425051c77",
+      "name": "Code in JavaScript1"
     }
   ],
   "connections": {
@@ -1720,7 +1725,7 @@
       "main": [
         [
           {
-            "node": "Add to cart api status check",
+            "node": "Code in JavaScript",
             "type": "main",
             "index": 0
           }
@@ -1852,7 +1857,19 @@
       "main": [
         [
           {
-            "node": "Restaurant open/close condition",
+            "node": "getRestaurantCategories api",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "sending userData,  restaurantId, contentId to next node",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Restaurant closed",
             "type": "main",
             "index": 0
           }
@@ -1901,29 +1918,6 @@
           },
           {
             "node": "Code in JavaScript10",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Restaurant open/close condition": {
-      "main": [
-        [
-          {
-            "node": "getRestaurantCategories api",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "sending userData,  restaurantId, contentId to next node",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Restaurant closed",
             "type": "main",
             "index": 0
           }
@@ -2036,6 +2030,11 @@
             "node": "for exact searched item in search restaurant menu api response",
             "type": "main",
             "index": 0
+          },
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -2065,6 +2064,39 @@
             "node": "Add to cart api error response",
             "type": "main",
             "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Add to cart api status check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
           }
         ]
       ]
