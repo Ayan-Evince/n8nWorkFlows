@@ -4,14 +4,14 @@
       "parameters": {
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "You are a voice assistant for a food ordering app.\n\nYour job is to extract the following fields by considering the FULL conversation history, not just the latest message. If a field was mentioned in a previous message, carry it forward:\n\n\"item\": the main food item (e.g., pizza, burger)\n\"restaurant\": name of the restaurant if mentioned\n\"add_ons\": any toppings or modifiers the user mentions (e.g., double cheese, spicy, large size)\n\nYou are also given a dynamic list of valid restaurant names as \"restaurantList\". Use this list strictly for validation and matching.\n🛠 Speech-to-Text Correction Rule\nThe user input is generated using speech-to-text and may contain incorrect or misheard words.\nCorrect ONLY words that are phonetically garbled or clearly misspelled (e.g., \"pija\" → pizza, \"burget\" → burger, \"Mek donald\" → McDonald's).\n\n🔍 Restaurant Matching Rule\nBefore finalizing the \"restaurant\" field:\n\nSTEP 1 — EXACT MATCH CHECK (Highest Priority):\nStrip leading/trailing whitespace from the user input and compare it character-by-character against every name in \"restaurantList\".\nIf it matches exactly (case-insensitive), return that restaurant name as-is from the list. DO NOT modify spacing, punctuation, or any character. Skip all STT correction for this value.\n\nSTEP 2 — FUZZY MATCH (only if no exact match found):\nIf the input closely matches (phonetically or partially) any restaurant in the list, map it to the EXACT string from the list.\n\nExample:\n\"spice symphoni\" → \"Spice Symphony\"\n\"urban eats\" → \"UrbanEats Cafe\"\nUse fuzzy/phonetic matching but be conservative:\nMatch only if confidence is high (clear similarity).\nDo NOT randomly guess a restaurant.\nIf a match is found, ALWAYS return the exact restaurant name from the list (no modification).\nIf no confident match is found, keep the original spoken text (after basic STT correction if needed).\n\n🚫 STRICT RULES to prevent over-correction:\n\nIf a restaurant name exactly matches or already exists in \"restaurantList\" (case-sensitive), return it VERBATIM from the list.\nDo NOT modify formatting, spacing, punctuation, or casing of matched restaurant names.\nOnly correct a word if it is clearly not a valid English word or known name on its own.\nDo NOT add, remove, or change articles (a, an, the) in restaurant or item names.\nWhen in doubt, keep the original word — do not guess or \"improve\" proper nouns.\n\nStrictly follow these Status Rules:\n0: ONLY if the user mentions a restaurant name but NO food item\n1: ONLY if the user mentions a food item but NO restaurant name\n2: ONLY if BOTH a restaurant name AND a food item are mentioned\n3: ONLY if the user is confused or unsure about what or where to order\n4: For ALL other cases — including greetings (e.g. \"Hi\", \"Hello\"), general questions (e.g. \"How are you\"), or anything unrelated to placing a food order\n\n\nMessage Rules\n\nGenerate a \"message\" field — a sentence the assistant will speak to the user.\n\nDo NOT include add-ons in the message\nOnly confirm the item and restaurant\nIf any field is missing, politely ask for the missing information\nDon't ask for item if only restaurant name is mentioned\nIf the user is not familiar with restaurants, ask if they want suggestions\nIf item and restaurant are already known from previous messages, do NOT ask again\n\nIMPORTANT\nRespond with only valid JSON\nDo not include markdown, bullet points, or explanation\nDo not wrap the JSON in triple backticks\nDo not speak outside the JSON\n\nResponse Format\n\n{\n\"item\": \"pizza\",\n\"restaurant\": \"Dominos\",\n\"add_ons\": [\"double cheese\"],\n\"message\": \"👍\",\n\"status\": 3\n}"
+          "systemMessage": "You are a voice assistant for a food ordering app.\n\nYour job is to extract the following fields by considering the FULL conversation history, not just the latest message. If a field was mentioned in a previous message, carry it forward:\n\n\"item\": the main food item (e.g., pizza, burger)\n\"restaurant\": name of the restaurant if mentioned\n\"add_ons\": any toppings or modifiers the user mentions (e.g., double cheese, spicy, large size)\n\nYou are also given a dynamic list of valid restaurant names as \"restaurantList\". Use this list strictly for validation and matching.\n🛠 Speech-to-Text Correction Rule\nThe user input is generated using speech-to-text and may contain incorrect or misheard words.\nCorrect ONLY words that are phonetically garbled or clearly misspelled (e.g., \"pija\" → pizza, \"burget\" → burger, \"Mek donald\" → McDonald's).\n\n🔍 Restaurant Matching Rule\nBefore finalizing the \"restaurant\" field:\n\nSTEP 1 — EXACT MATCH CHECK (Highest Priority):\nStrip leading/trailing whitespace from the user input and compare it character-by-character against every name in \"restaurantList\".\nIf it matches exactly (case-insensitive), return that restaurant name as-is from the list. DO NOT modify spacing, punctuation, or any character. Skip all STT correction for this value.\n\nSTEP 2 — FUZZY MATCH (only if no exact match found):\nIf the input closely matches (phonetically or partially) any restaurant in the list, map it to the EXACT string from the list.\n\nExample:\n\"spice symphoni\" → \"Spice Symphony\"\n\"urban eats\" → \"UrbanEats Cafe\"\nUse fuzzy/phonetic matching but be conservative:\nMatch only if confidence is high (clear similarity).\nDo NOT randomly guess a restaurant.\nIf a match is found, ALWAYS return the exact restaurant name from the list (no modification).\nIf no confident match is found, keep the original spoken text (after basic STT correction if needed).\n\n🚫 STRICT RULES to prevent over-correction:\n\nIf a restaurant name exactly matches or already exists in \"restaurantList\" (case-sensitive), return it VERBATIM from the list.\nDo NOT modify formatting, spacing, punctuation, or casing of matched restaurant names.\nOnly correct a word if it is clearly not a valid English word or known name on its own.\nDo NOT add, remove, or change articles (a, an, the) in restaurant or item names.\nWhen in doubt, keep the original word — do not guess or \"improve\" proper nouns.\n\nStrictly follow these Status Rules:\n0: ONLY if the user mentions a restaurant name but NO food item\n1: ONLY if the user mentions a food item but NO restaurant name\n2: ONLY if BOTH a restaurant name AND a food item are mentioned\n3: For ALL other cases — including greetings (e.g. \"Hi\", \"Hello\"), general questions (e.g. \"How are you\"), or anything unrelated to placing a food order\n4: ONLY if the user is completely clueless — unsure about both what to eat AND where to order from, with NO food item and NO restaurant name present\n5: ONLY if the user knows what food item they want but is unsure which restaurant to order from — food item IS present but restaurant name is NOT\n6: ONLY if the user knows which restaurant they want to order from but is unsure what to order — restaurant name IS present but food item is NOT\n\n\nMessage Rules\n\nGenerate a \"message\" field — a sentence the assistant will speak to the user.\n\nDo NOT include add-ons in the message\nOnly confirm the item and restaurant\nIf any field is missing, politely ask for the missing information\nDon't ask for item if only restaurant name is mentioned\nIf the user is not familiar with restaurants, ask if they want suggestions\nIf item and restaurant are already known from previous messages, do NOT ask again\n\nIMPORTANT\nRespond with only valid JSON\nDo not include markdown, bullet points, or explanation\nDo not wrap the JSON in triple backticks\nDo not speak outside the JSON\n\nResponse Format\n\n{\n\"item\": \"pizza\",\n\"restaurant\": \"Dominos\",\n\"add_ons\": [\"double cheese\"],\n\"message\": \"👍\",\n\"status\": 3\n}"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        12304,
-        5200
+        11216,
+        5152
       ],
       "id": "54d35aed-c7a6-460d-8d26-a7761bc17986",
       "name": "AI Agent"
@@ -29,8 +29,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        12192,
-        5472
+        11104,
+        5424
       ],
       "id": "9e96e0fe-dccd-4cff-9c9d-40ec4422681a",
       "name": "OpenAI Chat Model",
@@ -49,15 +49,15 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        12544,
-        5472
+        11456,
+        5424
       ],
       "id": "29c82110-0266-4832-8b2e-313b44178ee2",
       "name": "Structured Output Parser"
     },
     {
       "parameters": {
-        "jsCode": "return { \n  lastExecutedNode: \"no restaurant name\",\n  message: \"Please enter the name of the restaurant.\" \n};\n"
+        "jsCode": "return [{ \n  json: {\n    lastExecutedNode: \"no restaurant name\",\n    message: \"Please enter the name of the restaurant.\" \n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -70,7 +70,7 @@
     },
     {
       "parameters": {
-        "jsCode": "return {\n  lastExecutedNode: \"no Item name\",\n  message: \"Please enter the name of the item you want to order.\"\n};\n"
+        "jsCode": "return [{\n  json: {\n      lastExecutedNode: \"no Item name\",\n      message: \"Please enter the name of the item you want to order.\"\n    }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -205,8 +205,8 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        12352,
-        5472
+        11264,
+        5424
       ],
       "id": "e7cd16a8-2b92-44fb-a5e4-92a3e2da50f1",
       "name": "Simple Memory"
@@ -234,8 +234,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        11840,
-        5152
+        10752,
+        5104
       ],
       "id": "4935442c-af9a-455e-acb8-ef0d9ce2b43b",
       "name": "Webhook",
@@ -397,7 +397,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        15984,
+        15968,
         4944
       ],
       "id": "53ca0c1c-040f-4dc3-a758-30d1a13ad153",
@@ -625,8 +625,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        12320,
-        4832
+        11232,
+        4784
       ],
       "id": "55fa64ae-5213-47ab-9a7c-58de56f450f1",
       "name": "data from user"
@@ -638,8 +638,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        12064,
-        5200
+        10976,
+        5152
       ],
       "id": "54c2a930-101e-43bf-9f3e-24134475a8bd",
       "name": "input for AI model"
@@ -651,8 +651,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        12656,
-        5200
+        11568,
+        5152
       ],
       "id": "07cda250-2edc-49a5-bc5b-9bfe0ad548ab",
       "name": "output from AI"
@@ -666,8 +666,8 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        12816,
-        5024
+        11728,
+        4976
       ],
       "id": "3af966c5-7baa-4c48-b8bb-6aa70536bd06",
       "name": "Merge AI output and user input"
@@ -785,6 +785,50 @@
                 ],
                 "combinator": "and"
               }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "e09cf7bf-1463-450a-bdcc-3d5e7d790240",
+                    "leftValue": "={{ $json.userInputStatus }}",
+                    "rightValue": 5,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "95c48f16-2f3a-4640-a25f-a9322aabd0e3",
+                    "leftValue": "={{ $json.userInputStatus }}",
+                    "rightValue": 6,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
             }
           ]
         },
@@ -793,8 +837,8 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        13040,
-        4976
+        11952,
+        4928
       ],
       "id": "ba75869a-dfa7-4645-baea-ac11d8b0db4f",
       "name": "Conditions on the basis of amount of information we have"
@@ -806,8 +850,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        13280,
-        5264
+        13312,
+        5936
       ],
       "id": "6d215965-a958-45e5-9b10-f41946c4a1af",
       "name": "User not sure"
@@ -819,15 +863,15 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        13248,
-        5504
+        13360,
+        5696
       ],
       "id": "b7939177-e752-43e0-be6e-91765918f1e8",
       "name": "Irrelevant message from user"
     },
     {
       "parameters": {
-        "jsCode": "return {\n  lastExecutedNode: \"get restaurant api fail\",\n  message: $input.first().json.message\n  }"
+        "jsCode": "return [{\n  json: {\n    lastExecutedNode: \"get restaurant api fail\",\n    message: $input.first().json.message\n  }\n}];\n\nreturn [\n  {\n    json: {\n      userData: $input.all()\n    }\n  }\n]"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -840,7 +884,7 @@
     },
     {
       "parameters": {
-        "jsCode": "return {\n  lastExecutedNode: \"Restaurant not found\",\n  message: `Hmm, I couldn’t find '${$input.first().json.userData.userInputRestaurant}' 🤔.Could you check the name or try a different restaurant?`\n  }"
+        "jsCode": "return [{\n  json: {\n    lastExecutedNode: \"Restaurant not found\",\n    message: `Hmm, I couldn’t find '${$input.first().json.userData.userInputRestaurant}' 🤔.Could you check the name or try a different restaurant?`\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -853,7 +897,7 @@
     },
     {
       "parameters": {
-        "jsCode": "return {\n  lastExecutedNode: \"Get restaurant Detil api\",\n  message: $input.first().json.message\n}"
+        "jsCode": "return [{\n  json: {\n    lastExecutedNode: \"Get restaurant Detil api\",\n    message: $input.first().json.message\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -866,7 +910,7 @@
     },
     {
       "parameters": {
-        "jsCode": "return {\n  lastExecutedNode: \"restaurant closed\",\n  message: $input.first().json.message\n}"
+        "jsCode": "return [{\n  json: {\n    lastExecutedNode: \"restaurant closed\",\n    message: $input.first().json.message\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -884,7 +928,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        13712,
+        13680,
         5088
       ],
       "id": "1c8fc3bf-719e-4d79-a4af-63f700206159",
@@ -919,92 +963,6 @@
       ],
       "id": "a954df28-2af8-49fb-9eca-61c0ea160e64",
       "name": "Get Restaurant detail api response merge"
-    },
-    {
-      "parameters": {
-        "rules": {
-          "values": [
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.status == 1 && $json.restaurant[0].timings.closing.toLowerCase() == 'open'}}",
-                    "rightValue": 1,
-                    "operator": {
-                      "type": "boolean",
-                      "operation": "true",
-                      "singleValue": true
-                    },
-                    "id": "75afc74b-76b7-4400-8c85-136d7b96e0bd"
-                  }
-                ],
-                "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "id": "f5000b9f-7ae9-4561-9014-ecef9ff68499",
-                    "leftValue": "={{ $json.status == 1 && $json.restaurant[0].timings.closing.toLowerCase() != 'open' }}",
-                    "rightValue": 1,
-                    "operator": {
-                      "type": "boolean",
-                      "operation": "true",
-                      "singleValue": true
-                    }
-                  }
-                ],
-                "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "id": "720a528f-0446-4abe-958f-0c56c4d1fadc",
-                    "leftValue": "={{ $json.status != 1 }}",
-                    "rightValue": "",
-                    "operator": {
-                      "type": "boolean",
-                      "operation": "true",
-                      "singleValue": true
-                    }
-                  }
-                ],
-                "combinator": "and"
-              }
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3.4,
-      "position": [
-        15536,
-        5232
-      ],
-      "id": "ed2b2faa-8d0b-449e-8680-0169b67caea8",
-      "name": "Get restaurant detail status check"
     },
     {
       "parameters": {
@@ -1391,7 +1349,7 @@
     },
     {
       "parameters": {
-        "jsCode": "return {\n  lastExecutedNode: \"Get Restaurant Categories fail\",\n  message: $input.first().json.message\n}"
+        "jsCode": "return [{\n  json: {\n    lastExecutedNode: \"Get Restaurant Categories fail\",\n    message: $input.first().json.message\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -1417,7 +1375,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const input = $input.first().json;\nconst menuItems = input.menu_item;\n\nconst itemNames = menuItems.map(item => item.name).join(', ');\n\nreturn {\n    lastExecuted: \"For multiple items in search restaurant menu api\",\n    message: \"There are multiple options available. Which one would you like to have: \"+itemNames\n};\n"
+        "jsCode": "const input = $input.first().json;\nconst menuItems = input.menu_item;\n\nconst itemNames = menuItems.map(item => item.name).join(', ');\n\nreturn [{\n  json: {\n    lastExecuted: \"For multiple items in search restaurant menu api\",\n    message: \"There are multiple options available. Which one would you like to have: \"+itemNames\n  }\n}];\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -1430,7 +1388,7 @@
     },
     {
       "parameters": {
-        "jsCode": "return {\n  lastExecutedNode: \"menu empty\",\n   message: \"No item found\"\n}"
+        "jsCode": "return [{\n  json: {\n    lastExecutedNode: \"menu empty\",\n     message: \"No item found\"\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -1517,7 +1475,7 @@
     },
     {
       "parameters": {
-        "jsCode": "\nconst cartItem = {\n  price: $input.first().json.addToCartResponse.items[0].price,\n  quantity: $input.first().json.addToCartResponse.items[0].quantity,\n  addonsCategoryList: $input.first().json.addToCartResponse.items[0].addons_category_list,\n  comment: $input.first().json.addToCartResponse.items[0].comment,\n  name: $input.first().json.addToCartResponse.items[0].name,\n  availability: $input.first().json.foundRestaurantItem.menu_item[0].availability,\n  foodTypeId: $input.first().json.foundRestaurantItem.menu_item[0].food_type_id,\n  foodTypeName: $input.first().json.foundRestaurantItem.menu_item[0].food_type_name,\n  inStock: $input.first().json.foundRestaurantItem.menu_item[0].in_stock,\n  image: $input.first().json.foundRestaurantItem.menu_item[0].image,\n  isCustomize: $input.first().json.foundRestaurantItem.menu_item[0].is_customize,\n  isDeal: $input.first().json.foundRestaurantItem.menu_item[0].is_deal,\n  isComboItem: $input.first().json.foundRestaurantItem.menu_item[0].is_combo_item,\n  isRecipesMenu: $input.first().json.foundRestaurantItem.menu_item[0].is_recipes_menu,\n  offerPrice: $input.first().json.foundRestaurantItem.menu_item[0].offer_price,\n  menuContentId: $input.first().json.foundRestaurantItem.menu_item[0].menu_content_id\n}\n\nreturn {\n  cartId: $input.first().json.addToCartResponse.cart_id,\n  tableId: $input.first().json.addToCartResponse.table_id,\n  couponArray: $input.first().json.addToCartResponse.coupon_array,\n  couponName: $input.first().json.addToCartResponse.coupon_name,\n  comboItemDetails: $input.first().json.addToCartResponse.items[0].combo_item_details,\n  isComboItem: $input.first().json.addToCartResponse.items[0].is_combo_item,\n  items: cartItem,\n  resId: $input.first().json.foundRestaurantItem.restaurantData.restaurantId,\n  resName: $input.first().json.foundRestaurantItem.restaurantData.restaurantName,\n  message: \"Item added to cart\",\n  lastExecuted: \"Add to cart api success response\"\n}"
+        "jsCode": "\nconst cartItem = {\n  price: $input.first().json.addToCartResponse.items[0].price,\n  quantity: $input.first().json.addToCartResponse.items[0].quantity,\n  addonsCategoryList: $input.first().json.addToCartResponse.items[0].addons_category_list,\n  comment: $input.first().json.addToCartResponse.items[0].comment,\n  name: $input.first().json.addToCartResponse.items[0].name,\n  availability: $input.first().json.foundRestaurantItem.menu_item[0].availability,\n  foodTypeId: $input.first().json.foundRestaurantItem.menu_item[0].food_type_id,\n  foodTypeName: $input.first().json.foundRestaurantItem.menu_item[0].food_type_name,\n  inStock: $input.first().json.foundRestaurantItem.menu_item[0].in_stock,\n  image: $input.first().json.foundRestaurantItem.menu_item[0].image,\n  isCustomize: $input.first().json.foundRestaurantItem.menu_item[0].is_customize,\n  isDeal: $input.first().json.foundRestaurantItem.menu_item[0].is_deal,\n  isComboItem: $input.first().json.foundRestaurantItem.menu_item[0].is_combo_item,\n  isRecipesMenu: $input.first().json.foundRestaurantItem.menu_item[0].is_recipes_menu,\n  offerPrice: $input.first().json.foundRestaurantItem.menu_item[0].offer_price,\n  menuContentId: $input.first().json.foundRestaurantItem.menu_item[0].menu_content_id\n}\n\nreturn [{\n  json: {\n    cartId: $input.first().json.addToCartResponse.cart_id,\n    tableId: $input.first().json.addToCartResponse.table_id,\n    couponArray: $input.first().json.addToCartResponse.coupon_array,\n    couponName: $input.first().json.addToCartResponse.coupon_name,\n    comboItemDetails: $input.first().json.addToCartResponse.items[0].combo_item_details,\n    isComboItem: $input.first().json.addToCartResponse.items[0].is_combo_item,\n    items: cartItem,\n    resId: $input.first().json.foundRestaurantItem.restaurantData.restaurantId,\n    resName: $input.first().json.foundRestaurantItem.restaurantData.restaurantName,\n    message: \"Item added to cart\",\n    lastExecuted: \"Add to cart api success response\"\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -1530,7 +1488,7 @@
     },
     {
       "parameters": {
-        "jsCode": "return {\n  lastExecuted: \"Add to cart api response\",\n  message: $input.first().json.message\n}"
+        "jsCode": "return [{\n  json: {\n    lastExecuted: \"Add to cart api response\",\n    message: $input.first().json.message\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -1558,7 +1516,7 @@
     },
     {
       "parameters": {
-        "jsCode": "return {\n  addToCartResponse: $input.first().json\n}"
+        "jsCode": "return [{\n  json: {\n    addToCartResponse: $input.first().json\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -1571,7 +1529,7 @@
     },
     {
       "parameters": {
-        "jsCode": "return {\n  foundRestaurantItem: $input.first().json\n}"
+        "jsCode": "return [{\n  json: {\n    foundRestaurantItem: $input.first().json\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -1581,6 +1539,789 @@
       ],
       "id": "914e47b2-5679-4380-bcb3-ffac7845e038",
       "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://mrpdev.eatanceapp.com/v6/api/getHome",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $json.authorizationToken }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "language_slug",
+              "value": "={{ $json.languageSlug }}"
+            },
+            {
+              "name": "latitude",
+              "value": "={{ $json.latitude }}"
+            },
+            {
+              "name": "longitude",
+              "value": "={{ $json.longitude }}"
+            },
+            {
+              "name": "distance",
+              "value": "={{ $json.distance }}"
+            },
+            {
+              "name": "page_no",
+              "value": "={{ $json.pageNo }}"
+            },
+            {
+              "name": "count",
+              "value": "={{ $json.count }}"
+            },
+            {
+              "name": "user_id",
+              "value": "={{ $json.userId }}"
+            },
+            {
+              "name": "user_timezone",
+              "value": "={{ $json.userTimezone }}"
+            },
+            {
+              "name": "response_flag",
+              "value": "={{ $json.responseFlag }}"
+            },
+            {
+              "name": "platform",
+              "value": "={{ $json.platform }}"
+            },
+            {
+              "name": "orderMode",
+              "value": "={{ $json.orderMode }}"
+            },
+            {
+              "name": "food",
+              "value": "={{ $json.food }}"
+            },
+            {
+              "name": "app_token",
+              "value": "={{ $json.appToken }}"
+            },
+            {
+              "name": "category_id",
+              "value": "={{ $json.category_id }}"
+            },
+            {
+              "name": "offersFreeDelivery",
+              "value": "={{ $json.offersFreeDelivery }}"
+            },
+            {
+              "name": "sortBy",
+              "value": "={{ $json.sortBy }}"
+            },
+            {
+              "name": "availability",
+              "value": "={{ $json.availability }}"
+            },
+            {
+              "name": "itemSearch",
+              "value": "={{ $json.userInputItem }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        13296,
+        6176
+      ],
+      "id": "7f57db6d-fc81-42a5-9281-eaeb845b6d01",
+      "name": "Get restaurant api1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\n\nconst restaurantNames = data.restaurant.map(r => r.name);\n\n// Store as a comma-separated string\nconst restaurantNamesString = restaurantNames.join(\", \");\n\nreturn [{\n  json: {\n    message: `Here is the list of the restaurants from where you can order from:  ${restaurantNamesString}`,\n    lastExecutedString: \"\"\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        13792,
+        6080
+      ],
+      "id": "a53ebf72-09a5-4748-96df-ce230f433beb",
+      "name": "handle api1"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  lastExecutedNode: \"get restaurant api fail\",\n  message: $input.first().json.message\n  }"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        13792,
+        6304
+      ],
+      "id": "135d4341-516f-4725-bd84-68532511b050",
+      "name": "get restaurant api fail1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "75afc74b-76b7-4400-8c85-136d7b96e0bd"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "f5000b9f-7ae9-4561-9014-ecef9ff68499",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "notEquals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        13520,
+        6176
+      ],
+      "id": "e3ba6c76-bcf5-43f5-a30d-9e47ca9ac510",
+      "name": "Get Restaurant api status check1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://mrpdev.eatanceapp.com/v6/api/getHome",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $json.authorizationToken }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "language_slug",
+              "value": "={{ $json.languageSlug }}"
+            },
+            {
+              "name": "latitude",
+              "value": "={{ $json.latitude }}"
+            },
+            {
+              "name": "longitude",
+              "value": "={{ $json.longitude }}"
+            },
+            {
+              "name": "distance",
+              "value": "={{ $json.distance }}"
+            },
+            {
+              "name": "page_no",
+              "value": "={{ $json.pageNo }}"
+            },
+            {
+              "name": "count",
+              "value": "={{ $json.count }}"
+            },
+            {
+              "name": "user_id",
+              "value": "={{ $json.userId }}"
+            },
+            {
+              "name": "user_timezone",
+              "value": "={{ $json.userTimezone }}"
+            },
+            {
+              "name": "response_flag",
+              "value": "={{ $json.responseFlag }}"
+            },
+            {
+              "name": "platform",
+              "value": "={{ $json.platform }}"
+            },
+            {
+              "name": "orderMode",
+              "value": "={{ $json.orderMode }}"
+            },
+            {
+              "name": "food",
+              "value": "={{ $json.food }}"
+            },
+            {
+              "name": "app_token",
+              "value": "={{ $json.appToken }}"
+            },
+            {
+              "name": "category_id",
+              "value": "={{ $json.category_id }}"
+            },
+            {
+              "name": "offersFreeDelivery",
+              "value": "={{ $json.offersFreeDelivery }}"
+            },
+            {
+              "name": "sortBy",
+              "value": "={{ $json.sortBy }}"
+            },
+            {
+              "name": "availability",
+              "value": "={{ $json.availability }}"
+            },
+            {
+              "name": "itemSearch",
+              "value": "={{ $json.userInputRestaurant }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        13280,
+        6576
+      ],
+      "id": "763b0e7f-2be4-41e9-a6de-4a6bfcc6ae9c",
+      "name": "Get restaurant api2"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\n\nconst restaurantNames = data.restaurant.map(r => r.name);\n\n// Store as a comma-separated string\nconst restaurantNamesString = restaurantNames.join(\", \");\n\nreturn [{\n  json: {\n    message: `Here is the list of the restaurants from where you can order from:  ${restaurantNamesString}`,\n    lastExecutedString: \"\"\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        14112,
+        6576
+      ],
+      "id": "96d7f700-3281-4edd-b085-a4972a26d544",
+      "name": "handle api2"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  lastExecutedNode: \"get restaurant api fail\",\n  message: $input.first().json.message\n  }"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        14096,
+        6880
+      ],
+      "id": "67c90e6b-02dc-4a45-8187-fdd3b29a2391",
+      "name": "get restaurant api fail2"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "75afc74b-76b7-4400-8c85-136d7b96e0bd"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "f5000b9f-7ae9-4561-9014-ecef9ff68499",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "notEquals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        13840,
+        6592
+      ],
+      "id": "a275e1f5-9d0e-43d2-81ea-c50c726697f0",
+      "name": "Get Restaurant api status check2"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status == 1 && $json.restaurant[0].timings.closing.toLowerCase() == 'open'}}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "id": "75afc74b-76b7-4400-8c85-136d7b96e0bd"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "f5000b9f-7ae9-4561-9014-ecef9ff68499",
+                    "leftValue": "={{ $json.status == 1 && $json.restaurant[0].timings.closing.toLowerCase() != 'open' }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "720a528f-0446-4abe-958f-0c56c4d1fadc",
+                    "leftValue": "={{ $json.status != 1 }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        15536,
+        5232
+      ],
+      "id": "ed2b2faa-8d0b-449e-8680-0169b67caea8",
+      "name": "Get restaurant detail status and open/close check"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      userData: $input.all()\n    }\n  }\n]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        13264,
+        6832
+      ],
+      "id": "bb6b3200-c5e2-4e50-9821-9b351d89cdcd",
+      "name": "returning user input1"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json : {\n      allRestaurantsData: $input.first().json\n    }\n  }\n]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        13440,
+        6576
+      ],
+      "id": "020f640a-80d2-4c4d-8605-71c5d98adcb9",
+      "name": "Formatting get restaurant api response1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        13664,
+        6592
+      ],
+      "id": "f7093c5d-aa16-4d56-8d2c-d918ed919281",
+      "name": "Get Restaurant api response merge1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://mrpdev.eatanceapp.com/v6/api/getRestaurantDetail",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $json.userData.authorizationToken }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "language_slug",
+              "value": "={{ $json.userData.languageSlug }}"
+            },
+            {
+              "name": "restaurant_id",
+              "value": "={{ $json.restaurantId }}"
+            },
+            {
+              "name": "content_id",
+              "value": "={{ $json.restaurantId }}"
+            },
+            {
+              "name": "food",
+              "value": "=\"\""
+            },
+            {
+              "name": "price",
+              "value": "\"\""
+            },
+            {
+              "name": "availability",
+              "value": "0"
+            },
+            {
+              "name": "user_id",
+              "value": "={{ $json.userData.userId }}"
+            },
+            {
+              "name": "isEvent",
+              "value": "0"
+            },
+            {
+              "name": "send_categories",
+              "value": "0"
+            },
+            {
+              "name": "user_timezone",
+              "value": "={{ $json.userData.userTimezone }}"
+            },
+            {
+              "name": "platform",
+              "value": "={{ $json.userData.platform }}"
+            },
+            {
+              "name": "app_token",
+              "value": "={{ $json.userData.appToken }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        14832,
+        6592
+      ],
+      "id": "55944c2e-ad7c-430a-92ea-23d12d6c8221",
+      "name": "getRestaurantDetail api1"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  json: {\n     userData: $input.first().json.userData\n  }\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        14832,
+        6816
+      ],
+      "id": "9f6213d8-d334-4419-b7e9-e48de3f32665",
+      "name": "Code in JavaScript11"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  json: {\n    lastExecutedNode: \"Restaurant not found\",\n    message: `Hmm, I couldn’t find '${$input.first().json.userData.userInputRestaurant}' 🤔.Could you check the name or try a different restaurant?`\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        14832,
+        6384
+      ],
+      "id": "d6ac4267-dc28-40fa-b965-326d215437b7",
+      "name": "Restaurant not found1"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  json: {\n    lastExecutedNode: \"Get restaurant Detil api\",\n    message: $input.first().json.message\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        15536,
+        7040
+      ],
+      "id": "1f4ff756-4000-4116-9a03-f5511961f864",
+      "name": "GetRestaurant Detail api fail1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        15120,
+        6736
+      ],
+      "id": "d004001a-714a-4d61-9f2e-0458d87a3f43",
+      "name": "Get Restaurant detail api response merge1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.isRestaurantAvailable }}",
+                    "rightValue": 0,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "465ba742-63de-4a1a-a713-ee051345bdf6"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "8ba9e57a-7ce4-4abb-81ca-2e278915ef74",
+                    "leftValue": "={{ $json.isRestaurantAvailable }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        14432,
+        6576
+      ],
+      "id": "54e8dec2-267b-4b51-8838-d18069c60cb9",
+      "name": "Restaurant found/not found condition1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status == 1 && $json.restaurant[0].timings.closing.toLowerCase() == 'open'}}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "id": "75afc74b-76b7-4400-8c85-136d7b96e0bd"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "f5000b9f-7ae9-4561-9014-ecef9ff68499",
+                    "leftValue": "={{ $json.status == 1 && $json.restaurant[0].timings.closing.toLowerCase() != 'open' }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "720a528f-0446-4abe-958f-0c56c4d1fadc",
+                    "leftValue": "={{ $json.status != 1 }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        15328,
+        6720
+      ],
+      "id": "30e71e60-001f-4a6b-adae-074fcde8b72f",
+      "name": "Get restaurant detail status and open/close check1"
     }
   ],
   "connections": {
@@ -1806,6 +2547,13 @@
         ],
         [
           {
+            "node": "Irrelevant message from user",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
             "node": "User not sure",
             "type": "main",
             "index": 0
@@ -1813,11 +2561,33 @@
         ],
         [
           {
-            "node": "Irrelevant message from user",
+            "node": "Get restaurant api1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get restaurant api2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "returning user input1",
             "type": "main",
             "index": 0
           }
         ]
+      ]
+    },
+    "User not sure": {
+      "main": [
+        []
+      ]
+    },
+    "Irrelevant message from user": {
+      "main": [
+        []
       ]
     },
     "Formatting get restaurant api response": {
@@ -1846,37 +2616,7 @@
       "main": [
         [
           {
-            "node": "Get restaurant detail status check",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Get restaurant detail status check": {
-      "main": [
-        [
-          {
-            "node": "getRestaurantCategories api",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "sending userData,  restaurantId, contentId to next node",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Restaurant closed",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "GetRestaurant Detail api fail",
+            "node": "Get restaurant detail status and open/close check",
             "type": "main",
             "index": 0
           }
@@ -2097,6 +2837,207 @@
             "node": "Merge",
             "type": "main",
             "index": 1
+          }
+        ]
+      ]
+    },
+    "Get restaurant api1": {
+      "main": [
+        [
+          {
+            "node": "Get Restaurant api status check1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Restaurant api status check1": {
+      "main": [
+        [
+          {
+            "node": "handle api1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "get restaurant api fail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get restaurant api2": {
+      "main": [
+        [
+          {
+            "node": "Formatting get restaurant api response1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "handle api2": {
+      "main": [
+        [
+          {
+            "node": "Restaurant found/not found condition1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Restaurant api status check2": {
+      "main": [
+        [
+          {
+            "node": "handle api2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "get restaurant api fail2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get restaurant detail status and open/close check": {
+      "main": [
+        [
+          {
+            "node": "getRestaurantCategories api",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "sending userData,  restaurantId, contentId to next node",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Restaurant closed",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "GetRestaurant Detail api fail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "returning user input1": {
+      "main": [
+        [
+          {
+            "node": "Get Restaurant api response merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Formatting get restaurant api response1": {
+      "main": [
+        [
+          {
+            "node": "Get Restaurant api response merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Restaurant api response merge1": {
+      "main": [
+        [
+          {
+            "node": "Get Restaurant api status check2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getRestaurantDetail api1": {
+      "main": [
+        [
+          {
+            "node": "Get Restaurant detail api response merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript11": {
+      "main": [
+        [
+          {
+            "node": "Get Restaurant detail api response merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Get Restaurant detail api response merge1": {
+      "main": [
+        [
+          {
+            "node": "Get restaurant detail status and open/close check1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restaurant found/not found condition1": {
+      "main": [
+        [
+          {
+            "node": "Restaurant not found1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "getRestaurantDetail api1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code in JavaScript11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get restaurant detail status and open/close check1": {
+      "main": [
+        [],
+        [],
+        [
+          {
+            "node": "GetRestaurant Detail api fail1",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
