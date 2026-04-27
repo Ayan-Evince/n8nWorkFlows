@@ -10,10 +10,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        1104,
-        2848
+        18256,
+        14464
       ],
-      "id": "ca7c4d84-3b3c-4a94-b020-3b75e039a95f",
+      "id": "ad6bcbdf-4964-456c-aa82-2100d306b08e",
       "name": "AI Agent"
     },
     {
@@ -29,14 +29,14 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        992,
-        3120
+        18144,
+        14736
       ],
-      "id": "7cc1122b-f736-4000-80d9-26d55ae374e0",
+      "id": "35c1a8c5-06ae-441b-b130-8a3b29b3a937",
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
-          "id": "hq2foWb9S3cxwz5S",
+          "id": "XdhMGVSa2bdNbl1X",
           "name": "OpenAi account"
         }
       }
@@ -49,10 +49,10 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        1344,
-        3120
+        18496,
+        14736
       ],
-      "id": "14277919-5791-4ea2-a0ec-50a715a5c357",
+      "id": "f8ded0c9-5ea3-43ac-8283-8549425148ca",
       "name": "Structured Output Parser"
     },
     {
@@ -62,10 +62,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3792,
-        2576
+        20944,
+        14192
       ],
-      "id": "5313e716-0980-44d8-9830-86ad1077a377",
+      "id": "2e967efd-3e2e-4a42-ab5c-94e64af55bc7",
       "name": "no restaurant name"
     },
     {
@@ -75,10 +75,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3792,
-        2352
+        20944,
+        13968
       ],
-      "id": "fff8cb0f-c878-41e1-ba57-25d06c18ab62",
+      "id": "8903db0a-a451-4c14-83ec-f6bd2a14ecee",
       "name": "no item name"
     },
     {
@@ -88,10 +88,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4288,
-        2784
+        21440,
+        14400
       ],
-      "id": "581aa419-dc5f-43ca-b2f3-f7bc34d1ebd8",
+      "id": "4a1d5fb0-3ab0-4931-a183-b0c853a762a5",
       "name": "handle api"
     },
     {
@@ -190,10 +190,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        3392,
-        2784
+        20544,
+        14400
       ],
-      "id": "37dcd9f7-f460-4b40-9588-7e4ef517f74e",
+      "id": "83a3ed01-c3ec-44a7-a352-21b00d9507dc",
       "name": "Get restaurant api"
     },
     {
@@ -205,10 +205,10 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        1152,
-        3120
+        18304,
+        14736
       ],
-      "id": "6686531b-6635-4dc0-af55-0cbb40955bae",
+      "id": "d79df2a5-3311-4d91-978c-b66ff9704177",
       "name": "Simple Memory"
     },
     {
@@ -218,10 +218,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3472,
-        3024
+        20624,
+        14640
       ],
-      "id": "7a7b8701-8d3c-462e-b8bf-2cfb391e660e",
+      "id": "46ccdcb0-1bea-4c12-93c5-7087b32288e0",
       "name": "returning user input"
     },
     {
@@ -234,10 +234,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        640,
-        2800
+        17792,
+        14416
       ],
-      "id": "846950a8-02a5-41ba-829f-7f10cc7396e2",
+      "id": "2faca999-d989-4faf-976a-4cc92ceec7e7",
       "name": "Webhook",
       "webhookId": "09cdb1c1-8869-4bdb-a52d-c08a4a344fc0"
     },
@@ -312,10 +312,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        4928,
-        2800
+        22080,
+        14416
       ],
-      "id": "9dbf6575-33a5-44de-b872-9cfe3e3f6289",
+      "id": "aa6eaae3-d456-4f5a-a72c-55de0bbb66f0",
       "name": "getRestaurantDetail api"
     },
     {
@@ -397,10 +397,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        5856,
-        2640
+        23008,
+        14256
       ],
-      "id": "89c13864-1cd8-41ed-9a09-218d4ef03d91",
+      "id": "fbd00dbc-477e-4295-b012-01d13320c2c9",
       "name": "getRestaurantCategories api"
     },
     {
@@ -486,10 +486,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        6704,
-        2624
+        23856,
+        14240
       ],
-      "id": "5cc2f340-1b8d-4337-8ec2-82c49dd00414",
+      "id": "bdcb3955-587f-4f9e-a6aa-e73bcbe4eabe",
       "name": "searchRestaurantMenu api"
     },
     {
@@ -499,10 +499,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4928,
-        3024
+        22080,
+        14640
       ],
-      "id": "fa80a24d-4c8c-4a85-848c-75c73f85f14d",
+      "id": "bb4ca104-b58b-4205-82ef-3c509a785628",
       "name": "Code in JavaScript10"
     },
     {
@@ -612,10 +612,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        8192,
-        3056
+        25344,
+        14672
       ],
-      "id": "b542149c-a18c-442e-9480-6fe806fb0ef4",
+      "id": "35fdc83a-bde3-44ad-a165-ec4b4ba71419",
       "name": "addtoCart  api"
     },
     {
@@ -625,10 +625,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1120,
-        2480
+        18272,
+        14096
       ],
-      "id": "18f112af-1b16-48d5-a921-40ea21442287",
+      "id": "da380928-0af5-42e5-bf2f-0532d56d67d7",
       "name": "data from user"
     },
     {
@@ -638,10 +638,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        864,
-        2848
+        18016,
+        14464
       ],
-      "id": "cb2c02ce-d907-4c4b-bdee-e5fd99475825",
+      "id": "d62e0b1a-5bd7-4093-ae41-f93f800f3f70",
       "name": "input for AI model"
     },
     {
@@ -651,10 +651,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1456,
-        2848
+        18608,
+        14464
       ],
-      "id": "1a617f72-fed4-42f8-8372-0b60ab7611cd",
+      "id": "0823171b-6e80-4b4e-94d9-952e16d355e3",
       "name": "output from AI"
     },
     {
@@ -666,10 +666,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        1616,
-        2672
+        18768,
+        14288
       ],
-      "id": "a84f2d6c-36aa-498b-8a62-4f2b24d93d5b",
+      "id": "f844e49d-4e75-4eb2-80aa-d8449d284739",
       "name": "Merge AI output and user input"
     },
     {
@@ -837,10 +837,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        1840,
-        2624
+        18992,
+        14240
       ],
-      "id": "1286d78e-e4f2-4b08-9914-e8374a692d42",
+      "id": "2a9ed3e0-5c67-40d0-b468-987641e2e632",
       "name": "Conditions on the basis of amount of information we have"
     },
     {
@@ -850,10 +850,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3200,
-        3632
+        20352,
+        15248
       ],
-      "id": "1bacf3ec-9038-409f-b595-55c306dd4e8b",
+      "id": "af2c443e-c143-4bb2-abfd-ef50aa076ab8",
       "name": "User not sure"
     },
     {
@@ -863,10 +863,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3248,
-        3392
+        20400,
+        15008
       ],
-      "id": "2345abbd-f764-49a5-a20d-c9ba1dc7db94",
+      "id": "ff4f7ad9-67f5-4696-8fd8-df0aa9336a12",
       "name": "Irrelevant message from user"
     },
     {
@@ -876,10 +876,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4176,
-        3008
+        21328,
+        14624
       ],
-      "id": "8bba9c1e-413d-42d9-9e52-f2d7b1718c89",
+      "id": "85a185a6-eead-4190-b027-414499dc9f77",
       "name": "get restaurant api fail"
     },
     {
@@ -889,10 +889,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4928,
-        2592
+        22080,
+        14208
       ],
-      "id": "aca13af1-c3a6-4185-a43f-406e1117d8e7",
+      "id": "bf2b6089-efca-4484-9921-081622ec88e1",
       "name": "Restaurant not found"
     },
     {
@@ -902,10 +902,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        5632,
-        3248
+        22784,
+        14864
       ],
-      "id": "0886f262-843c-4fb8-a89d-a2df034764e6",
+      "id": "ed1e3b25-11fc-4e26-ad0b-92839280ceef",
       "name": "GetRestaurant Detail api fail"
     },
     {
@@ -915,10 +915,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        5792,
-        3088
+        22944,
+        14704
       ],
-      "id": "d15f937b-ec7b-4c16-bd67-9f1aa5f82949",
+      "id": "523ec0b4-df44-4416-8c5a-5730dbccb8f5",
       "name": "Restaurant closed"
     },
     {
@@ -928,10 +928,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3568,
-        2784
+        20720,
+        14400
       ],
-      "id": "251921cf-0684-49ed-8167-200d7c0e16e0",
+      "id": "f6558182-e5f5-4485-8171-8b8294b0c329",
       "name": "Formatting get restaurant api response"
     },
     {
@@ -943,10 +943,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        3792,
-        2800
+        20944,
+        14416
       ],
-      "id": "8ee15b72-c8f6-4fa0-8b0e-82e2c644438d",
+      "id": "c1fdeb0b-4366-444e-a660-eed9899225fc",
       "name": "Get Restaurant api response merge"
     },
     {
@@ -958,10 +958,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        5216,
-        2944
+        22368,
+        14560
       ],
-      "id": "7ed133f1-0f70-451b-b1eb-97c9de7423af",
+      "id": "0bc1ff56-7484-40a3-862c-27a56af6f99c",
       "name": "Get Restaurant detail api response merge"
     },
     {
@@ -1019,10 +1019,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        4016,
-        2800
+        21168,
+        14416
       ],
-      "id": "ff27dbc5-8737-4189-86bd-297b0dbae5e1",
+      "id": "94f37e5a-e7b3-4c19-8d73-bc00a1b3d545",
       "name": "Get Restaurant api status check"
     },
     {
@@ -1080,10 +1080,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        4528,
-        2784
+        21680,
+        14400
       ],
-      "id": "9c9e820b-f8dd-4c72-b8df-5a3bc094466c",
+      "id": "d6e9ea7a-7e1c-46c4-92f8-ccb87d682ba6",
       "name": "Restaurant found/not found condition"
     },
     {
@@ -1093,10 +1093,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        5840,
-        2912
+        22992,
+        14528
       ],
-      "id": "10d68946-04a3-4fca-bf22-505508463a8f",
+      "id": "9dbbcb1a-b4dd-4a9b-a9da-940eac1f9732",
       "name": "sending userData,  restaurantId, contentId to next node"
     },
     {
@@ -1108,10 +1108,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        6160,
-        2896
+        23312,
+        14512
       ],
-      "id": "b9586688-2b68-4aa5-8bef-b6a0f762e601",
+      "id": "83855918-addc-4681-aae6-8f0cc30b71de",
       "name": "Get Restaurant categories response merge"
     },
     {
@@ -1169,10 +1169,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        6384,
-        2896
+        23536,
+        14512
       ],
-      "id": "4440332d-6f66-4eca-a3aa-ab9fc440116d",
+      "id": "fccd7e3b-de8a-4168-b3e9-2c97d7e06189",
       "name": "Get restaurant categories status check"
     },
     {
@@ -1182,10 +1182,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        6704,
-        2880
+        23856,
+        14496
       ],
-      "id": "bfbd5b22-2396-46e3-ab32-1ca346a880b8",
+      "id": "f8f366a9-45fb-4fcb-8113-8d6bebbbc7fb",
       "name": "sending userData, restaurantId, contentId to next node"
     },
     {
@@ -1197,10 +1197,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        7056,
-        2864
+        24208,
+        14480
       ],
-      "id": "bb1f4480-cb3a-4093-ae21-75c9bcf8f34c",
+      "id": "acc6d10f-c4bb-4047-8d8f-eba4db2b779f",
       "name": "Search restaurant menu api merge"
     },
     {
@@ -1258,10 +1258,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        7312,
-        2864
+        24464,
+        14480
       ],
-      "id": "bbc6dc67-8fe6-48c5-b2ac-ea889a08ed06",
+      "id": "b75676a5-9d7b-4b6d-8186-2db644f0a8a7",
       "name": "Search restaurant menu api status check"
     },
     {
@@ -1341,10 +1341,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        7600,
-        2832
+        24752,
+        14448
       ],
-      "id": "c5a6fef2-7396-4a74-a9f0-3aabb2e1b975",
+      "id": "1d6362e5-a9f6-4cea-8757-d3b4db38bdec",
       "name": "Search restaurant menu items found conditions"
     },
     {
@@ -1354,10 +1354,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        6688,
-        3088
+        23840,
+        14704
       ],
-      "id": "f8e359fa-85d1-4d40-8c9a-65badc0302b4",
+      "id": "e6b335c9-d73b-4d3b-9013-eab7c5c24e0c",
       "name": "Get Restaurant Categories api fail"
     },
     {
@@ -1367,10 +1367,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        7616,
-        3120
+        24768,
+        14736
       ],
-      "id": "a8f06dad-9aaf-48ad-83bd-02f75387864e",
+      "id": "6b41e651-afa4-44d4-9126-676c5b8f35fb",
       "name": "Search Restaurant menu api fail"
     },
     {
@@ -1380,10 +1380,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        7920,
-        2848
+        25072,
+        14464
       ],
-      "id": "c99e961f-c1fe-4873-a35f-ce80900801a9",
+      "id": "41bf8316-43fc-4845-bae6-9dd82aa1c67c",
       "name": "For multiple items in search restaurant menu api"
     },
     {
@@ -1393,10 +1393,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        7920,
-        2560
+        25072,
+        14176
       ],
-      "id": "3338b443-f341-4932-89af-50b6f432b984",
+      "id": "cf818362-677a-40bf-8ebb-9ba710b29e48",
       "name": "for no item in search restaurant menu api response"
     },
     {
@@ -1406,10 +1406,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        7920,
-        3056
+        25072,
+        14672
       ],
-      "id": "41f2120f-4bf0-4b2e-9b57-b5d929d2a8ac",
+      "id": "abe515a7-68c9-445d-a96b-fd643e569c6b",
       "name": "for exact searched item in search restaurant menu api response"
     },
     {
@@ -1467,10 +1467,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        8928,
-        3072
+        26080,
+        14688
       ],
-      "id": "33455b8a-cf31-4dc2-bfb1-741d9ee5fbc9",
+      "id": "923fd381-febe-449f-9433-7cc7b6d93be5",
       "name": "Add to cart api status check"
     },
     {
@@ -1480,10 +1480,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        9312,
-        2896
+        26464,
+        14512
       ],
-      "id": "934ab61c-c6b4-46c7-8db8-43d635b0d658",
+      "id": "135212bb-8bdd-474a-afa5-087db52d7912",
       "name": "Add to cart api success response"
     },
     {
@@ -1493,10 +1493,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        9296,
-        3280
+        26448,
+        14896
       ],
-      "id": "3bae0666-7ece-4dbc-b615-3a49b645e7c1",
+      "id": "24129e77-2a81-44e5-ace6-7cc956039b4f",
       "name": "Add to cart api error response"
     },
     {
@@ -1508,10 +1508,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        8672,
-        3072
+        25824,
+        14688
       ],
-      "id": "92b6e7f1-e053-4d85-9cc2-51df3dae926f",
+      "id": "46d8a0f4-6130-4365-bd1c-416f06bb0f8b",
       "name": "Merge"
     },
     {
@@ -1521,10 +1521,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        8400,
-        3056
+        25552,
+        14672
       ],
-      "id": "81f9ccfd-1da8-4250-9943-ca1cdaeab60d",
+      "id": "628f8ea5-92d9-4904-8ee5-33d4ec81ae51",
       "name": "Code in JavaScript"
     },
     {
@@ -1534,10 +1534,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        7984,
-        3312
+        25136,
+        14928
       ],
-      "id": "418ee096-c67c-471f-a4ba-ce89d0414517",
+      "id": "efb2efff-94f8-4693-b67c-0e5e58bbd433",
       "name": "Code in JavaScript1"
     },
     {
@@ -1636,10 +1636,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        3184,
-        3872
+        20336,
+        15488
       ],
-      "id": "c35785ec-9864-4ced-a7e9-ce41635d0a3f",
+      "id": "b175fb58-d11c-4a56-a7d0-6201153b9347",
       "name": "Get restaurant api1"
     },
     {
@@ -1649,10 +1649,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3680,
-        3776
+        20832,
+        15392
       ],
-      "id": "fae29e48-2ad2-4389-8e12-c47c430488f3",
+      "id": "55c04b03-6949-4aee-86f6-6fc7eba45ca8",
       "name": "handle api1"
     },
     {
@@ -1662,10 +1662,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3680,
-        4000
+        20832,
+        15616
       ],
-      "id": "e8cd6719-27ee-4e04-adcd-a3ae012bfdca",
+      "id": "b8c656d8-b841-4010-9e36-a41a098117d2",
       "name": "get restaurant api fail1"
     },
     {
@@ -1723,10 +1723,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        3408,
-        3872
+        20560,
+        15488
       ],
-      "id": "6eefc3d1-bf5d-407c-9322-0e53b58ec9ac",
+      "id": "a223b37c-70b0-4536-841e-dbadae17fbcf",
       "name": "Get Restaurant api status check1"
     },
     {
@@ -1825,10 +1825,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        3168,
-        4272
+        20320,
+        15888
       ],
-      "id": "2435dc71-849a-48cf-926d-30412dc82139",
+      "id": "672bafa2-4bc4-4e19-b05a-9422d62cea40",
       "name": "Get restaurant api2"
     },
     {
@@ -1838,10 +1838,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3984,
-        4576
+        21136,
+        16192
       ],
-      "id": "6d33c391-cce3-40c7-a959-ea5d123674e6",
+      "id": "24bd2fbb-e4be-4f0e-8b8e-3781b3a12a1f",
       "name": "get restaurant api fail2"
     },
     {
@@ -1899,10 +1899,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        3728,
-        4288
+        20880,
+        15904
       ],
-      "id": "662b80b3-3a7e-4b01-9ca4-6b28b5a71ede",
+      "id": "fefc2ed4-4da8-45a3-8f1f-14a836bc65b0",
       "name": "Get Restaurant api status check2"
     },
     {
@@ -1985,10 +1985,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        5424,
-        2928
+        22576,
+        14544
       ],
-      "id": "259c64a7-31be-4a2b-a16c-c67011a8668b",
+      "id": "4c4b8f4b-b71f-42a2-988d-cac1ee07c204",
       "name": "Get restaurant detail status and open/close check"
     },
     {
@@ -1998,10 +1998,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3152,
-        4528
+        20304,
+        16144
       ],
-      "id": "8aa2b1e4-cd44-4925-98f3-6156ecb1ea8f",
+      "id": "e411ed76-839b-4fc4-8039-435a0e60e4d3",
       "name": "returning user input1"
     },
     {
@@ -2011,10 +2011,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3328,
-        4272
+        20480,
+        15888
       ],
-      "id": "903a04cd-2040-4314-a3a3-821d20d10494",
+      "id": "213677b9-425f-4029-bdb0-d4210b2ed297",
       "name": "Formatting get restaurant api response1"
     },
     {
@@ -2026,10 +2026,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        3552,
-        4288
+        20704,
+        15904
       ],
-      "id": "a8047bcc-756d-4931-9b90-515f71b01f44",
+      "id": "c4dc1db9-f56c-4d57-89f3-75df320a3083",
       "name": "Get Restaurant api response merge1"
     },
     {
@@ -2103,10 +2103,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        4720,
-        4288
+        21872,
+        15904
       ],
-      "id": "ed7504f9-6467-4082-a440-30c6a0893071",
+      "id": "3d8bf4b4-79fb-4df4-9bb5-ad0916a72cbc",
       "name": "getRestaurantDetail api1"
     },
     {
@@ -2116,10 +2116,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4720,
-        4512
+        21872,
+        16128
       ],
-      "id": "a6518435-fd46-4b5e-a821-0c948dc57380",
+      "id": "922e7d78-9d2d-4bf3-aa6f-1101ce809233",
       "name": "Code in JavaScript11"
     },
     {
@@ -2129,10 +2129,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4720,
-        4080
+        21872,
+        15696
       ],
-      "id": "1a5bf9ef-67c8-44c0-b388-911e3c62baa8",
+      "id": "d3a58b1a-b6dc-42a9-af92-5668ef2fdb86",
       "name": "Restaurant not found1"
     },
     {
@@ -2142,10 +2142,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        5424,
-        4736
+        22576,
+        16352
       ],
-      "id": "0f725660-1230-45ed-a2a4-bbfd5c9d6752",
+      "id": "119e50e4-b127-403b-8679-fe43f25092b1",
       "name": "GetRestaurant Detail api fail1"
     },
     {
@@ -2157,10 +2157,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        5008,
-        4432
+        22160,
+        16048
       ],
-      "id": "82c1474e-4f22-4c83-aa6c-ca1e9b666aaf",
+      "id": "d3de0ed5-fe33-458a-83a5-10df8a1f11eb",
       "name": "Get Restaurant detail api response merge1"
     },
     {
@@ -2218,10 +2218,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        4320,
-        4272
+        21472,
+        15888
       ],
-      "id": "b5fb5f43-bbe6-41e4-803a-5639be997f53",
+      "id": "983c6db0-7ffe-4a05-b457-7416cd1af0c9",
       "name": "Restaurant found/not found condition1"
     },
     {
@@ -2304,10 +2304,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        5216,
-        4416
+        22368,
+        16032
       ],
-      "id": "fe06ffa8-0012-4485-94df-d9733ac8f26f",
+      "id": "96960be9-3390-4c8f-a7a3-0c9701c20d80",
       "name": "Get restaurant detail status and open/close check1"
     },
     {
@@ -2317,10 +2317,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4000,
-        4272
+        21152,
+        15888
       ],
-      "id": "4b626e7f-e306-4922-94f2-dd1d538b1978",
+      "id": "49d33989-ba04-48ca-b34e-ed842ccdbfc7",
       "name": "handle api3"
     },
     {
@@ -2330,10 +2330,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        5424,
-        4304
+        22576,
+        15920
       ],
-      "id": "a6f46973-12f6-4cd7-a911-dc13fbc336b0",
+      "id": "01d4626b-d59a-40fe-a57e-ecff7d637090",
       "name": "Code in JavaScript2"
     },
     {
@@ -2343,11 +2343,179 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        5472,
-        4480
+        22624,
+        16096
       ],
-      "id": "24aa2f69-4338-4924-98a6-c67647c3c4fe",
+      "id": "d9a62419-22b1-4406-b76e-b3fe8cc4cd46",
       "name": "Code in JavaScript3"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://mrpdev.eatanceapp.com/v6/api/getRestaurantMenu",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $json.userData.authorizationToken }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "app_token",
+              "value": "={{ $json.userData.appToken }}"
+            },
+            {
+              "name": "category_id",
+              "value": "=\"\""
+            },
+            {
+              "name": "availability",
+              "value": "={{0}}"
+            },
+            {
+              "name": "content_id",
+              "value": "={{ $json.restaurant[0].content_id }}"
+            },
+            {
+              "name": "count",
+              "value": "={{10}}"
+            },
+            {
+              "name": "food",
+              "value": "={{ \"\" }}"
+            },
+            {
+              "name": "language_slug",
+              "value": "={{ $json.userData.languageSlug }}"
+            },
+            {
+              "name": "menu_search",
+              "value": "={{ $json.userData.userInputItem }}"
+            },
+            {
+              "name": "page_no",
+              "value": "={{1}}"
+            },
+            {
+              "name": "platform",
+              "value": "={{ $json.userData.platform }}"
+            },
+            {
+              "name": "price",
+              "value": "={{\"\"}}"
+            },
+            {
+              "name": "restaurant_id",
+              "value": "={{ $json.restaurant[0].restuarant_id }}"
+            },
+            {
+              "name": "user_timezone",
+              "value": "={{ $json.userData.userTimezone }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        22816,
+        15920
+      ],
+      "id": "5a762d80-1b52-4611-a086-3abfa623ada6",
+      "name": "getRestaurantMenu api"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "5f023048-5608-401f-bf9c-32c5c57e18cc"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "3017071f-336c-4126-9e45-c1ca8570f171",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "notEquals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        23024,
+        15920
+      ],
+      "id": "828c68ba-a1fa-45e2-9e75-933542e44dab",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst names = $input.first().json.menu_item?.flatMap(category =>\n  category.items?.map(item => item.name) ?? []\n) ?? [];\n\n\nreturn {\n  lastExecutedNode: \"jvm 4 node\",\n  message: `Here are the list of items available : ${names}`\n  }"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        23248,
+        15776
+      ],
+      "id": "e6497799-077a-4760-a43a-4498b8adc16d",
+      "name": "Code in JavaScript4"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  lastExecutedNode: \"Jvm 5 fail\",\n  message: $input.first().json.message\n  }"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        23264,
+        16000
+      ],
+      "id": "67c965ba-6192-4c86-a9df-af74e0b3314f",
+      "name": "Code in JavaScript5"
     }
   ],
   "connections": {
@@ -3069,11 +3237,51 @@
           }
         ]
       ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "getRestaurantMenu api",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getRestaurantMenu api": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in JavaScript5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "pinData": {},
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "02a545b6fa723b69592e6d9f9d88b9802ba640a3647106636b0b59e01f09921c"
+    "instanceId": "31d9acb98c3ce8fa7b2a395404d4efc174b91427ba0c89d37d9cfc3f77c83967"
   }
 }
